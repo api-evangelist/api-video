@@ -3,12 +3,12 @@ url: >-
   https://raw.githubusercontent.com/api-evangelist/api-video/refs/heads/main/apis.yml
 apis:
   - aid: api-video:api-video
-    name: api.video
+    name: API.Video
     tags:
-      - API
-    humanURL: ' https://api.video/'
+      - Videos
+    humanURL: https://api.video/
     properties:
-      - url: ' https://api.video/'
+      - url: https://api.video/
         type: Documentation
     description: >-
       Integrate on-demand or live-stream videos into your website, software, or
@@ -23,16 +23,8 @@ created: '2025-03-01'
 modified: '2025-03-01'
 position: Consuming
 description: >-
-  API.Video is a video platform that allows developers to easily integrate video
-  capabilities into their applications. With API.Video, developers can upload,
-  transcode, and stream videos on their websites or mobile apps. The platform
-  offers customizable video players, live streaming capabilities, and video
-  analytics tools to help developers manage their video content more
-  efficiently. Additionally, API.Video provides secure video hosting and
-  delivery services, ensuring that videos are protected and delivered to viewers
-  seamlessly. Overall, API.Video simplifies the process of integrating video
-  functionality into applications, making it easier for developers to create
-  engaging and interactive experiences for their users.
+  Integrate on-demand or live-stream videos into your website, software, or app
+  in just minutes and let built-in AI features maximize their impact. 
 maintainers:
   - FN: Kin Lane
     email: info@apievangelist.com
