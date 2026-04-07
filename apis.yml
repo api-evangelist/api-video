@@ -11,8 +11,8 @@ apis:
       - url: https://api.video/
         type: Documentation
     description: >-
-      Integrate on-demand or live-stream videos into your website, software, or
-      app in just minutes and let built-in AI features maximize their impact. 
+      Integrate on-demand or live-stream videos into your website, software, or app
+      in just minutes and let built-in AI features maximize their impact.
 name: API.Video
 tags:
   - Videos
@@ -23,8 +23,8 @@ created: '2025-03-01'
 modified: '2025-03-01'
 position: Consuming
 description: >-
-  Integrate on-demand or live-stream videos into your website, software, or app
-  in just minutes and let built-in AI features maximize their impact. 
+  Integrate on-demand or live-stream videos into your website, software, or app in
+  just minutes and let built-in AI features maximize their impact.
 maintainers:
   - FN: Kin Lane
     email: info@apievangelist.com
