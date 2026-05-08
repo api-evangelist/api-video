@@ -41,6 +41,8 @@ apis:
         url: https://docs.api.video/reference
       - type: GettingStarted
         url: https://docs.api.video/get-started/start-building
+      - url: openapi/api-video-openapi.yml
+        type: OpenAPI
   - aid: api-video:live-streaming
     name: api.video Live Streaming API
     description: >-
