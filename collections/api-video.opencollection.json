@@ -1,0 +1,223 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "api.video API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "List videos",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://ws.api.video/videos"
+      },
+      "docs": "List videos"
+    },
+    {
+      "info": {
+        "name": "Create video",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://ws.api.video/videos",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create video"
+    },
+    {
+      "info": {
+        "name": "Upload video",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://ws.api.video/videos/upload",
+        "body": {
+          "type": "multipart-form",
+          "data": []
+        }
+      },
+      "docs": "Upload video"
+    },
+    {
+      "info": {
+        "name": "Upload thumbnail",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://ws.api.video/videos/thumbnail",
+        "body": {
+          "type": "multipart-form",
+          "data": []
+        }
+      },
+      "docs": "Upload thumbnail"
+    },
+    {
+      "info": {
+        "name": "Update thumbnail",
+        "type": "http"
+      },
+      "http": {
+        "method": "PATCH",
+        "url": "https://ws.api.video/videos/thumbnail",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Update thumbnail"
+    },
+    {
+      "info": {
+        "name": "Get video",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://ws.api.video/videos/:id",
+        "params": [
+          {
+            "name": "id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Get video"
+    },
+    {
+      "info": {
+        "name": "Update video",
+        "type": "http"
+      },
+      "http": {
+        "method": "PATCH",
+        "url": "https://ws.api.video/videos/:id",
+        "params": [
+          {
+            "name": "id",
+            "value": "",
+            "type": "path"
+          }
+        ],
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Update video"
+    },
+    {
+      "info": {
+        "name": "Delete video",
+        "type": "http"
+      },
+      "http": {
+        "method": "DELETE",
+        "url": "https://ws.api.video/videos/:id",
+        "params": [
+          {
+            "name": "id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Delete video"
+    },
+    {
+      "info": {
+        "name": "List discarded videos",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://ws.api.video/videos/discarded"
+      },
+      "docs": "List discarded videos"
+    },
+    {
+      "info": {
+        "name": "Get discarded video",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://ws.api.video/videos/discarded/:id",
+        "params": [
+          {
+            "name": "id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Get discarded video"
+    },
+    {
+      "info": {
+        "name": "Update discarded video",
+        "type": "http"
+      },
+      "http": {
+        "method": "PATCH",
+        "url": "https://ws.api.video/videos/discarded/:id",
+        "params": [
+          {
+            "name": "id",
+            "value": "",
+            "type": "path"
+          }
+        ],
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Update discarded video"
+    },
+    {
+      "info": {
+        "name": "Get video status",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://ws.api.video/videos/:id/status",
+        "params": [
+          {
+            "name": "id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Get video status"
+    },
+    {
+      "info": {
+        "name": "Create upload token",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://ws.api.video/videos/upload-token",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create upload token"
+    }
+  ],
+  "bundled": true
+}
