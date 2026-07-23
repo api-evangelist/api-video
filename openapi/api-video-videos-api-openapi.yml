@@ -1,17 +1,13 @@
 openapi: 3.1.0
 info:
-  title: api.video API
+  title: api.video Videos API
   version: 1.0.0
-  description: >-
-    api.video is a video infrastructure platform offering APIs for video on
-    demand, live streaming, analytics, and AI-powered features. This minimal
-    OpenAPI was generated from the public reference documentation and covers
-    the documented Videos endpoints.
+  description: api.video is a video infrastructure platform offering APIs for video on demand, live streaming, analytics, and AI-powered features. This minimal OpenAPI was generated from the public reference documentation and covers the documented Videos endpoints.
 servers:
-  - url: https://ws.api.video
-    description: Production
-x-generated-from: https://docs.api.video/reference
-x-generated-by: claude-crawl-2026-05-08
+- url: https://ws.api.video
+  description: Production
+tags:
+- name: Videos
 paths:
   /videos:
     get:
@@ -24,6 +20,8 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
     post:
       summary: Create video
       operationId: createVideo
@@ -39,6 +37,8 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
   /videos/upload:
     post:
       summary: Upload video
@@ -55,6 +55,8 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
   /videos/thumbnail:
     post:
       summary: Upload thumbnail
@@ -71,6 +73,8 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
     patch:
       summary: Update thumbnail
       operationId: updateThumbnail
@@ -86,13 +90,15 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
   /videos/{id}:
     parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get video
       operationId: getVideo
@@ -103,12 +109,16 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
     delete:
       summary: Delete video
       operationId: deleteVideo
       responses:
         '204':
           description: No Content
+      tags:
+      - Videos
     patch:
       summary: Update video
       operationId: updateVideo
@@ -124,6 +134,8 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
   /videos/discarded:
     get:
       summary: List discarded videos
@@ -135,13 +147,15 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
   /videos/discarded/{id}:
     parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get discarded video
       operationId: getDiscardedVideo
@@ -152,6 +166,8 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
     patch:
       summary: Update discarded video
       operationId: updateDiscardedVideo
@@ -167,13 +183,15 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
   /videos/{id}/status:
     parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get video status
       operationId: getVideoStatus
@@ -184,6 +202,8 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
   /videos/upload-token:
     post:
       summary: Create upload token
@@ -200,3 +220,7 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+      - Videos
+x-generated-from: https://docs.api.video/reference
+x-generated-by: claude-crawl-2026-05-08
