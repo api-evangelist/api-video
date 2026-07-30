@@ -5,7 +5,19 @@ description: >-
   AI-powered features including transcription and summarization. It provides lightning-fast encoding, 99.999% uptime,
   140+ global points of presence, and SDKs in 20+ languages for integrating video into websites, apps, and software.
 type: Index
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: freemium
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Freemium
+  confidence: medium
+  source:
+  - plans
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/api-video.png
 tags:
   - AI
   - Analytics
@@ -20,53 +32,47 @@ created: '2025-03-01'
 modified: '2026-05-19'
 specificationVersion: '0.19'
 apis:
-  - aid: api-video:video-on-demand
-    name: api.video Video On Demand API
-    description: >-
-      The api.video Video On Demand API enables uploading, encoding, and streaming videos with automatic format
-      conversion, thumbnail generation, and global CDN delivery. Supports resumable uploads and programmatic video
-      management.
-    humanURL: https://docs.api.video/reference
-    tags:
-      - Encoding
-      - On Demand
-      - Streaming
-      - Video
-    properties:
-      - type: Documentation
-        url: https://docs.api.video/reference
-      - type: GettingStarted
-        url: https://docs.api.video/get-started/start-building
-      - url: openapi/api-video-openapi.yml
-        type: OpenAPI
-  - aid: api-video:live-streaming
-    name: api.video Live Streaming API
-    description: >-
-      The api.video Live Streaming API enables low-latency live video broadcasts with RTMP ingest, automatic recording,
-      and global CDN delivery for audiences worldwide.
-    humanURL: https://docs.api.video/reference
-    tags:
-      - Broadcasting
-      - Live Streaming
-      - RTMP
-      - Video
-    properties:
-      - type: Documentation
-        url: https://docs.api.video/reference
-  - aid: api-video:analytics
-    name: api.video Analytics API
-    description: >-
-      The api.video Analytics API provides viewer engagement metrics, playback statistics, and performance data for both
-      video on demand and live streaming content.
-    humanURL: https://docs.api.video/reference
-    tags:
-      - Analytics
-      - Engagement
-      - Metrics
-      - Video
-    properties:
-      - type: Documentation
-        url: https://docs.api.video/reference
+- aid: api-video:live-streaming
+  name: api.video Live Streaming API
+  description: >-
+    The api.video Live Streaming API enables low-latency live video broadcasts with RTMP ingest, automatic
+    recording, and global CDN delivery for audiences worldwide.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Broadcasting
+  - Live Streaming
+  - RTMP
+  - Video
+  properties:
+  - type: Documentation
+    url: https://docs.api.video/reference
+- aid: api-video:analytics
+  name: api.video Analytics API
+  description: >-
+    The api.video Analytics API provides viewer engagement metrics, playback statistics, and performance
+    data for both video on demand and live streaming content.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Analytics
+  - Engagement
+  - Metrics
+  - Video
+  properties:
+  - type: Documentation
+    url: https://docs.api.video/reference
+- aid: api-video:api-video-videos-api
+  name: API.Video Videos API
+  description: The Videos API from API.Video — 8 operation(s) for videos.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Videos
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-videos-api-openapi.yml
+  - type: Documentation
+    url: https://docs.api.video/reference
+  - type: GettingStarted
+    url: https://docs.api.video/get-started/start-building
 common:
   - type: AgenticAccess
     url: agentic-access/api-video-agentic-access.yml
