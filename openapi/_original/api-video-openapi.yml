@@ -1,0 +1,202 @@
+openapi: 3.1.0
+info:
+  title: api.video API
+  version: 1.0.0
+  description: >-
+    api.video is a video infrastructure platform offering APIs for video on
+    demand, live streaming, analytics, and AI-powered features. This minimal
+    OpenAPI was generated from the public reference documentation and covers
+    the documented Videos endpoints.
+servers:
+  - url: https://ws.api.video
+    description: Production
+x-generated-from: https://docs.api.video/reference
+x-generated-by: claude-crawl-2026-05-08
+paths:
+  /videos:
+    get:
+      summary: List videos
+      operationId: listVideos
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      summary: Create video
+      operationId: createVideo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+  /videos/upload:
+    post:
+      summary: Upload video
+      operationId: uploadVideo
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /videos/thumbnail:
+    post:
+      summary: Upload thumbnail
+      operationId: uploadThumbnail
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+    patch:
+      summary: Update thumbnail
+      operationId: updateThumbnail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /videos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get video
+      operationId: getVideo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      summary: Delete video
+      operationId: deleteVideo
+      responses:
+        '204':
+          description: No Content
+    patch:
+      summary: Update video
+      operationId: updateVideo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /videos/discarded:
+    get:
+      summary: List discarded videos
+      operationId: listDiscardedVideos
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /videos/discarded/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get discarded video
+      operationId: getDiscardedVideo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+    patch:
+      summary: Update discarded video
+      operationId: updateDiscardedVideo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /videos/{id}/status:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get video status
+      operationId: getVideoStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /videos/upload-token:
+    post:
+      summary: Create upload token
+      operationId: createUploadToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object

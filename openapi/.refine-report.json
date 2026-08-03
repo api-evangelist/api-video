@@ -1,0 +1,14 @@
+{
+  "provider": "api-video",
+  "sources": [
+    "api-video-videos-api-openapi.yml"
+  ],
+  "outputs": [
+    "api-video-videos-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
