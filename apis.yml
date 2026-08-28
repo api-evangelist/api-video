@@ -5,6 +5,18 @@ description: >-
   AI-powered features including transcription and summarization. It provides lightning-fast encoding, 99.999% uptime,
   140+ global points of presence, and SDKs in 20+ languages for integrating video into websites, apps, and software.
 type: Index
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: freemium
   onboarding: unknown
