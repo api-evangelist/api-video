@@ -95,6 +95,9 @@ apis:
   - type: GettingStarted
     url: https://docs.api.video/get-started/start-building
 common:
+  - type: CapabilityMap
+    url: capabilities/api-video-capability-edges.yml
+    name: API.Video Business Capability Map
   - type: AgenticAccess
     url: agentic-access/api-video-agentic-access.yml
   - type: DomainSecurity

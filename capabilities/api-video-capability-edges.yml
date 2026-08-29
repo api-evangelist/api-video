@@ -1,0 +1,26 @@
+slug: api-video
+provider: API.Video
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Media, Entertainment & Telecom Content
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 1
+edges:
+- tag: Videos
+  spec_file: api-video-videos-api-openapi.yml
+  capability_id: BC-3710.10
+  capability_id_l1: BC-3710
+  capability_name: Asset Ingest & Quality Control
+  confidence: 0.7
+  evidence: POST /videos/upload  uploadVideo  Upload video ... GET /videos/{id}/status  getVideoStatus  Get
+    video status
+  reason: The surface creates video objects, uploads source files and thumbnails, updates metadata and
+    polls ingest/encoding status — onboarding of source material into a media asset platform. Sub-capability
+    could also be read as metadata cataloguing or transcoding, so confidence is held at 0.7.
