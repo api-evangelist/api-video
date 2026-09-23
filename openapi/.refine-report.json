@@ -1,7 +1,7 @@
 {
   "provider": "api-video",
   "sources": [
-    "api-video-videos-api-openapi.yml"
+    "_ae-authored/api-video-openapi.yml"
   ],
   "outputs": [
     "api-video-videos-api-openapi.yml"
@@ -9,6 +9,26 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (0 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "api-video-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "api-video-openapi.yml: tagged paths GET /videos -> Videos",
+    "api-video-openapi.yml: tagged paths POST /videos -> Videos",
+    "api-video-openapi.yml: tagged paths POST /videos/upload -> Videos",
+    "api-video-openapi.yml: tagged paths POST /videos/thumbnail -> Videos",
+    "api-video-openapi.yml: tagged paths PATCH /videos/thumbnail -> Videos",
+    "api-video-openapi.yml: tagged paths GET /videos/{id} -> Videos",
+    "api-video-openapi.yml: tagged paths DELETE /videos/{id} -> Videos",
+    "api-video-openapi.yml: tagged paths PATCH /videos/{id} -> Videos",
+    "api-video-openapi.yml: tagged paths GET /videos/discarded -> Videos",
+    "api-video-openapi.yml: tagged paths GET /videos/discarded/{id} -> Videos",
+    "api-video-openapi.yml: tagged paths PATCH /videos/discarded/{id} -> Videos",
+    "api-video-openapi.yml: tagged paths GET /videos/{id}/status -> Videos",
+    "api-video-openapi.yml: tagged paths POST /videos/upload-token -> Videos",
+    "api-video-openapi.yml: declared missing tag: Videos",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "api-video-videos-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
