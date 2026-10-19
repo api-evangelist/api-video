@@ -1,0 +1,301 @@
+openapi: 3.2.0
+info:
+  title: api.video Advanced authentication API
+  description: api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
+  version: '1'
+servers:
+- url: https://ws.api.video
+  description: Production server
+- url: https://sandbox.api.video
+  description: Test server `all videos are watermarked, and deleted after 24 hours.
+tags:
+- name: Advanced authentication
+paths:
+  /auth/api-key:
+    post:
+      tags:
+      - Advanced authentication
+      summary: Get Bearer Token
+      description: 'Returns a bearer token that can be used to authenticate other endpoint.
+
+
+        You can find the tutorial on using the disposable bearer token here.'
+      operationId: POST_auth-api-key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authenticate-payload'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-token'
+              examples:
+                response:
+                  value:
+                    token_type: Bearer
+                    expires_in: 3600
+                    access_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjUyZWM4NWUyMjFkODZjOWI0NDQ5NzBhMjQwMzUyOWQ4MDQyNGQ3ZmJjYjFlYWM2MjVlM2VkMjI2YWRlNTcxMDY2NDUyZDc0NjdhN2E4NjI0In0.eyJhdWQiOiJsaWJjYXN0IiwianRpIjoiNTJlYzg1ZTIyMWQ4NmM5YjQ0NDk3MGEyNDAzNTI5ZDgwNDI0ZDdmYmNiMWVhYzYyNWUzZWQyMjZhZGU1NzEwNjY0NTJkNzQ2N2E3YTg2MjQiLCJpYXQiOjE1MjUyNzYxNDcsIm5iZiI6MTUyNTI3NjE0NywiZXhwIjoxNTI1Mjc5NzQ3LCJzdWIiOiJ1c01vbml0b3IiLCJzY29wZXMiOlsibW9uaXRvci5saWJjYXN0LmNvbSJdLCJjb250ZXh0Ijp7InVzZXIiOiJ1c01vbml0b3IiLCJwcm9qZWN0IjoicHJNb25pdG9yIiwibWVtYmVyIjoibWVNb25pdG9yIn19.rUvishDNyJLNlI4W5VmguNecm5KD2uZgPkKJQbaqw-cJbSrVxkSbiKYtk_E3cz3WT7-IS2yFTsYN3uIo5Rbit8_HftweyEp2bdBRI8yjR6oZZ1sNJJXswISN1i2kk4r-aaxu7Xxf_LtsjOMUj_YZsvcc2nqBXPKjHbJCJryx3DDJaIcymOqao7nhQaCCQyrQooAXNTYs4E9fWN1dC_x2O-zok5TuG-xhEW-umwxfSUMWNgSTkz38ACceQ0PCJSgB3jqjDH4MwC7B3ppEPZuK5E6JhKeyRlalswRyYq3UQPnVeMTam7YQHsuTgbehF6WySW8i44o7V_MCe9hjPdp-WA
+                    refresh_token: def50200a28d88fb9aaa921be78eeb5604b071101a334899a7d5fc7492cf8ea752962ddc8961fe5c126101d4ecacd980396eb2fd494995b812dffcb98256c4277f790d1f658fc2d2e34f350740544e5232d69d68d34c648271d706c5e7049adac0b1832d0fdf71809715cc7e97fa63f65966deadb501a55ff469b0fd23a637cb6acbe9d9b8594a17f09efc2efeed82984764a0065d5e29c950c7b081a61ba2aaa192be3085c400ee37eac50fa9320ce2cfe8916c8165418d23e9f91b6a5c8515e1d74ee193a5a1ca01954fbff27361c20184240be2359e0afbed0bf1c762cf872450b5e8b5d4704f4fd9583e4470adc98409dd42965709712806bd9019378a72eea0b4912ce684ffd833db5806ab84174f905db2a75380071d004615c944bb8f8c4045cce7234c2be9a2330522cf7f067b8e58f57cffb6edb4b7ef91313e12bcde47e5e76ceee7fa52990132288f345d33ed917ae4fd54b7284f8964d898e97e1ee3bc4157f75d7fee63976e4be66ac1ec32ef74afa533f0eb593523f226cbec57d196ac8962
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bad-request'
+              examples:
+                response:
+                  value:
+                    type: https://docs.api.video/reference/authentication-invalid-user-credentials
+                    title: The user credentials were incorrect.
+                    name: ''
+                    status: 400
+      x-client-action: authenticate
+      x-client-hidden: true
+      x-doctave:
+        code-samples:
+        - language: go
+          code: '//With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+        - language: node
+          code: '//With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+        - language: php
+          code: '//With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+        - language: python
+          code: '#With the api.video API clients, authentication is taken care of with each client created.
+
+            # You get to skip this step!
+
+            '
+        - language: java
+          code: '//With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+        - language: csharp
+          code: '//With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+        - language: swift
+          code: '// With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+  /auth/refresh:
+    post:
+      tags:
+      - Advanced authentication
+      summary: Refresh Bearer Token
+      description: 'Accepts the old bearer token and returns a new bearer token that can be used to authenticate other endpoint.
+
+
+        You can find the tutorial on using the disposable bearer token here.'
+      operationId: POST_auth-refresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/refresh-token-payload'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/access-token'
+              examples:
+                response:
+                  value:
+                    token_type: Bearer
+                    expires_in: 3600
+                    access_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjUyZWM4NWUyMjFkODZjOWI0NDQ5NzBhMjQwMzUyOWQ4MDQyNGQ3ZmJjYjFlYWM2MjVlM2VkMjI2YWRlNTcxMDY2NDUyZDc0NjdhN2E4NjI0In0.eyJhdWQiOiJsaWJjYXN0IiwianRpIjoiNTJlYzg1ZTIyMWQ4NmM5YjQ0NDk3MGEyNDAzNTI5ZDgwNDI0ZDdmYmNiMWVhYzYyNWUzZWQyMjZhZGU1NzEwNjY0NTJkNzQ2N2E3YTg2MjQiLCJpYXQiOjE1MjUyNzYxNDcsIm5iZiI6MTUyNTI3NjE0NywiZXhwIjoxNTI1Mjc5NzQ3LCJzdWIiOiJ1c01vbml0b3IiLCJzY29wZXMiOlsibW9uaXRvci5saWJjYXN0LmNvbSJdLCJjb250ZXh0Ijp7InVzZXIiOiJ1c01vbml0b3IiLCJwcm9qZWN0IjoicHJNb25pdG9yIiwibWVtYmVyIjoibWVNb25pdG9yIn19.rUvishDNyJLNlI4W5VmguNecm5KD2uZgPkKJQbaqw-cJbSrVxkSbiKYtk_E3cz3WT7-IS2yFTsYN3uIo5Rbit8_HftweyEp2bdBRI8yjR6oZZ1sNJJXswISN1i2kk4r-aaxu7Xxf_LtsjOMUj_YZsvcc2nqBXPKjHbJCJryx3DDJaIcymOqao7nhQaCCQyrQooAXNTYs4E9fWN1dC_x2O-zok5TuG-xhEW-umwxfSUMWNgSTkz38ACceQ0PCJSgB3jqjDH4MwC7B3ppEPZuK5E6JhKeyRlalswRyYq3UQPnVeMTam7YQHsuTgbehF6WySW8i44o7V_MCe9hjPdp-WA
+                    refresh_token: def50200a28d88fb9aaa921be78eeb5604b071101a334899a7d5fc7492cf8ea752962ddc8961fe5c126101d4ecacd980396eb2fd494995b812dffcb98256c4277f790d1f658fc2d2e34f350740544e5232d69d68d34c648271d706c5e7049adac0b1832d0fdf71809715cc7e97fa63f65966deadb501a55ff469b0fd23a637cb6acbe9d9b8594a17f09efc2efeed82984764a0065d5e29c950c7b081a61ba2aaa192be3085c400ee37eac50fa9320ce2cfe8916c8165418d23e9f91b6a5c8515e1d74ee193a5a1ca01954fbff27361c20184240be2359e0afbed0bf1c762cf872450b5e8b5d4704f4fd9583e4470adc98409dd42965709712806bd9019378a72eea0b4912ce684ffd833db5806ab84174f905db2a75380071d004615c944bb8f8c4045cce7234c2be9a2330522cf7f067b8e58f57cffb6edb4b7ef91313e12bcde47e5e76ceee7fa52990132288f345d33ed917ae4fd54b7284f8964d898e97e1ee3bc4157f75d7fee63976e4be66ac1ec32ef74afa533f0eb593523f226cbec57d196ac8962
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bad-request'
+              examples:
+                response:
+                  value:
+                    status: 400
+                    type: https://docs.api.video/reference/authentication-invalid-user-credentials
+                    title: The user credentials were incorrect.
+                    name: ''
+      x-client-action: refresh
+      x-client-hidden: true
+      x-doctave:
+        code-samples:
+        - language: go
+          code: '//With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+        - language: node
+          code: '//With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+        - language: php
+          code: '//With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+        - language: python
+          code: '#With the api.video API clients, authentication is taken care of with each client created.
+
+            # You get to skip this step!
+
+            '
+        - language: java
+          code: '//With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+        - language: csharp
+          code: '//With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+        - language: swift
+          code: '// With the api.video API clients, authentication is taken care of with each client created.
+
+            // You get to skip this step!
+
+            '
+components:
+  schemas:
+    bad-request:
+      title: BadRequest
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+        problems:
+          description: Returns any additional problems in the request in an array of objects.
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/additional-bad-request-errors'
+    refresh-token-payload:
+      title: RefreshToken
+      required:
+      - refreshToken
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: 'The refresh token is either the first refresh token you received when you authenticated with the auth/api-key endpoint, or it''s the refresh token from the last time you used the auth/refresh endpoint. Place this in the body of your request to obtain a new access token (which is valid for an hour) and a new refresh token.
+
+            '
+      example:
+        refreshToken: def502005346d9cc2bd79a7793ab5bdabfefcaabfbb8c253f14733f1262077e1a3f38c4751d6d20f590c3784e531a82adc11f05fc1949aa46d5575aaa99cb84b9334ba66ac773576b5d7a418937ae337de62811d086dd42ad1164b12f87d67be6ffea18f2d50be9b95697b21c4d3c4372849bdb2287259cb80541570e913691a08b2fa33c85885930de15cebea627fc09f0255562ab3d39d87d4ff8fc02b00e252afcd480421dec7de9d1411176bcf669c527762e22294b453bc9ea06e9fa8ba5b873feb2ee14ce0a6a6ddd4b78c580631e210e9b9387265dc2bec9478a66a09dcdce1c40d2f856689e9d81742c9628a0b87b359e0b218ea1f07427eef89f999e47af89792f598e05847bd008fddc32ee63f4a601ffb4cd2ad08977f1c854ec358238322c918f05aa5a41f8a171dee497218408abc8283473f6112aeed7310815416a0fa36c63667e0ed014fa40b8992891bf58bae400d901c01450101c88f4978938ad138adc19cfe5698d60fd82cb27c586f6a8f70f4393c7c9e579df8739d46d249fb76d7
+    access-token:
+      title: AccessToken
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: The access token containing security credentials allowing you to acccess the API. The token lasts for one hour.
+          example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjUyZWM4NWUyMjFkODZjOWI0NDQ5NzBhMjQwMzUyOWQ4MDQyNGQ3ZmJjYjFlYWM2MjVlM2VkMjI2YWRlNTcxMDY2NDUyZDc0NjdhN2E4NjI0In0.eyJhdWQiOiJsaWJjYXN0IiwianRpIjoiNTJlYzg1ZTIyMWQ4NmM5YjQ0NDk3MGEyNDAzNTI5ZDgwNDI0ZDdmYmNiMWVhYzYyNWUzZWQyMjZhZGU1NzEwNjY0NTJkNzQ2N2E3YTg2MjQiLCJpYXQiOjE1MjUyNzYxNDcsIm5iZiI6MTUyNTI3NjE0NywiZXhwIjoxNTI1Mjc5NzQ3LCJzdWIiOiJ1c01vbml0b3IiLCJzY29wZXMiOlsibW9uaXRvci5saWJjYXN0LmNvbSJdLCJjb250ZXh0Ijp7InVzZXIiOiJ1c01vbml0b3IiLCJwcm9qZWN0IjoicHJNb25pdG9yIiwibWVtYmVyIjoibWVNb25pdG9yIn19.rUvishDNyJLNlI4W5VmguNecm5KD2uZgPkKJQbaqw-cJbSrVxkSbiKYtk_E3cz3WT7-IS2yFTsYN3uIo5Rbit8_HftweyEp2bdBRI8yjR6oZZ1sNJJXswISN1i2kk4r-aaxu7Xxf_LtsjOMUj_YZsvcc2nqBXPKjHbJCJryx3DDJaIcymOqao7nhQaCCQyrQooAXNTYs4E9fWN1dC_x2O-zok5TuG-xhEW-umwxfSUMWNgSTkz38ACceQ0PCJSgB3jqjDH4MwC7B3ppEPZuK5E6JhKeyRlalswRyYq3UQPnVeMTam7YQHsuTgbehF6WySW8i44o7V_MCe9hjPdp-WA
+        token_type:
+          type: string
+          description: The type of token you have.
+          default: bearer
+        refresh_token:
+          type: string
+          description: A token you can use to get the next access token when your current access token expires.
+          example: def50200a28d88fb9aaa921be78eeb5604b071101a334899a7d5fc7492cf8ea752962ddc8961fe5c126101d4ecacd980396eb2fd494995b812dffcb98256c4277f790d1f658fc2d2e34f350740544e5232d69d68d34c648271d706c5e7049adac0b1832d0fdf71809715cc7e97fa63f65966deadb501a55ff469b0fd23a637cb6acbe9d9b8594a17f09efc2efeed82984764a0065d5e29c950c7b081a61ba2aaa192be3085c400ee37eac50fa9320ce2cfe8916c8165418d23e9f91b6a5c8515e1d74ee193a5a1ca01954fbff27361c20184240be2359e0afbed0bf1c762cf872450b5e8b5d4704f4fd9583e4470adc98409dd42965709712806bd9019378a72eea0b4912ce684ffd833db5806ab84174f905db2a75380071d004615c944bb8f8c4045cce7234c2be9a2330522cf7f067b8e58f57cffb6edb4b7ef91313e12bcde47e5e76ceee7fa52990132288f345d33ed917ae4fd54b7284f8964d898e97e1ee3bc4157f75d7fee63976e4be66ac1ec32ef74afa533f0eb593523f226cbec57d196ac8962
+        expires_in:
+          type: integer
+          description: Lists the time in seconds when your access token expires. It lasts for one hour.
+      example:
+        access_token: est
+        token_type: qui nulla l
+        refresh_token: cillum
+        expires_in: 3600
+    additional-bad-request-errors:
+      title: BadRequest
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+    authenticate-payload:
+      title: ApiKey
+      required:
+      - apiKey
+      type: object
+      properties:
+        apiKey:
+          type: string
+          description: Your account API key. You can use your sandbox API key, or you can use your production API key.
+      example:
+        apiKey: 9VxMaPgsaFg7EBqmuspSzF7
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    apiKey:
+      type: http
+      scheme: basic
+x-stoplight:
+  id: ybzk39fiws46g
+x-client-base-paths:
+  production: https://ws.api.video
+  sandbox: https://sandbox.api.video
+x-doctave:
+  explorer-enabled: true
+  proxy-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - curl
+  - go
+  - node
+  - php
+  - python

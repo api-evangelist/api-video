@@ -1,16 +1,41 @@
 {
   "provider": "api-video",
   "sources": [
+    "_original/api-video-openapi.yml",
     "_ae-authored/api-video-openapi.yml"
   ],
   "outputs": [
-    "api-video-videos-api-openapi.yml"
+    "api-video-advanced-authentication-api-openapi.yml",
+    "api-video-analytics-api-openapi.yml",
+    "api-video-captions-api-openapi.yml",
+    "api-video-chapters-api-openapi.yml",
+    "api-video-live-streams-api-openapi.yml",
+    "api-video-player-themes-api-openapi.yml",
+    "api-video-summaries-api-openapi.yml",
+    "api-video-tags-api-openapi.yml",
+    "api-video-upload-tokens-api-openapi.yml",
+    "api-video-videos-api-openapi.yml",
+    "api-video-watermarks-api-openapi.yml",
+    "api-video-webhooks-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
-    "sourced from openapi/_original/ (0 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "api-video-openapi.yml: upgraded openapi 3.0.0 -> OpenAPI 3.2.0; promoted x-webhooks (6) to the standard `webhooks` key",
+    "api-video-openapi.yml: declared missing tag: Advanced authentication",
+    "api-video-openapi.yml: declared missing tag: Analytics",
+    "api-video-openapi.yml: declared missing tag: Captions",
+    "api-video-openapi.yml: declared missing tag: Chapters",
+    "api-video-openapi.yml: declared missing tag: Live Streams",
+    "api-video-openapi.yml: declared missing tag: Player Themes",
+    "api-video-openapi.yml: declared missing tag: Summaries",
+    "api-video-openapi.yml: declared missing tag: Tags",
+    "api-video-openapi.yml: declared missing tag: Upload Tokens",
+    "api-video-openapi.yml: declared missing tag: Videos",
+    "api-video-openapi.yml: declared missing tag: Watermarks",
+    "api-video-openapi.yml: declared missing tag: Webhooks",
     "api-video-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
     "api-video-openapi.yml: tagged paths GET /videos -> Videos",
     "api-video-openapi.yml: tagged paths POST /videos -> Videos",
@@ -26,7 +51,8 @@
     "api-video-openapi.yml: tagged paths GET /videos/{id}/status -> Videos",
     "api-video-openapi.yml: tagged paths POST /videos/upload-token -> Videos",
     "api-video-openapi.yml: declared missing tag: Videos",
-    "apis.yml register: already-registered"
+    "tag 'Videos' spans 2 source specs (api-video-openapi.yml, api-video-openapi.yml): per-path servers applied",
+    "apis.yml register: written (+11 apis, 14 total)"
   ],
   "skipped": [
     "api-video-videos-api-openapi.yml: previously refined output, superseded by openapi/_original/"

@@ -1,0 +1,682 @@
+openapi: 3.2.0
+info:
+  title: api.video Upload Tokens API
+  description: api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
+  version: '1'
+servers:
+- url: https://ws.api.video
+  description: Production server
+- url: https://sandbox.api.video
+  description: Test server `all videos are watermarked, and deleted after 24 hours.
+tags:
+- name: Upload Tokens
+paths:
+  /upload-tokens:
+    get:
+      tags:
+      - Upload Tokens
+      summary: List all active upload tokens
+      description: Retrieve a list of all currently active delegated tokens.
+      operationId: GET_upload-tokens
+      parameters:
+      - name: sortBy
+        in: query
+        description: 'Allowed: createdAt, ttl. You can use these to sort by when a token was created, or how much longer the token will be active (ttl - time to live). Date and time is presented in ATOM UTC format.'
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - createdAt
+          - ttl
+        example: ttl
+      - name: sortOrder
+        in: query
+        description: 'Allowed: asc, desc. Ascending is 0-9 or A-Z. Descending is 9-0 or Z-A.'
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+        example: asc
+      - $ref: '#/components/parameters/current-page'
+      - $ref: '#/components/parameters/page-size'
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/token-list-response'
+              examples:
+                response:
+                  value:
+                    data:
+                    - token: to37YfoPDRR2pcDKa6LsUE0M
+                      ttl: 3600
+                      createdAt: '2020-12-02T10:26:46+00:00'
+                      expiresAt: '2020-12-02T11:26:46+00:00'
+                    - token: to1W3ZS9PdUBZWzzTEZr1B79
+                      ttl: 0
+                      createdAt: '2020-12-02T10:26:28+00:00'
+                    pagination:
+                      currentPage: 1
+                      currentPageItems: 2
+                      pageSize: 25
+                      pagesTotal: 1
+                      itemsTotal: 2
+                      links:
+                      - rel: self
+                        uri: /upload-tokens?currentPage=1&pageSize=25
+                      - rel: first
+                        uri: /upload-tokens?currentPage=1&pageSize=25
+                      - rel: last
+                        uri: /upload-tokens?currentPage=1&pageSize=25
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-group-parameters: true
+      x-client-paginated: true
+      x-optional-object: true
+      x-client-action: list
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/UploadTokensApi.md#list\n\npackage main\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    uploadToken := \"to1tcmSFHeYY5KzyhOqVKMKb\" // string | The unique identifier for the token you want information about.\n\n    \n    res, err := client.UploadTokens.GetToken(uploadToken)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `UploadTokens.GetToken``: %v\\\n\", err)\n    }\n    // response from `GetToken`: UploadToken\n    fmt.Fprintf(os.Stdout, \"Response from `UploadTokens.GetToken`: %v\\\n\", res)\n}\n"
+        - language: node
+          code: "// First install the \"@api.video/nodejs-client\" npm package\n// Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/UploadTokensApi.md#list\n\nconst client = new ApiVideoClient({ apiKey: \"YOUR_API_KEY\" }); \n \nconst uploadTokens = await client.uploadTokens.list();\n        \n"
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/UploadTokensApi.md#list\n\nimport apivideo\nfrom apivideo.api import upload_tokens_api\nfrom apivideo.model.not_found import NotFound\nfrom apivideo.model.upload_token import UploadToken\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = upload_tokens_api.UploadTokensApi(api_client)\n    upload_token = \"to1tcmSFHeYY5KzyhOqVKMKb\" # str | The unique identifier for the token you want information about.\n\n    # example passing only required values which don't have defaults set\n    try:\n        # Show upload token\n        api_response = api_instance.get_token(upload_token)\n        pprint(api_response)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling UploadTokensApi->get_token: %s\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/UploadTokensApi.md#list\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.UploadTokensApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    UploadTokensApi apiInstance = client.uploadTokens();\n    \n    String uploadToken = \"to1tcmSFHeYY5KzyhOqVKMKb\"; // The unique identifier for the token you want information about.\n\n    try {\n      UploadToken result = apiInstance.getToken(uploadToken);\n      System.out.println(result);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling UploadTokensApi#getToken\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/UploadTokensApi.md#list\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.UploadTokensApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    UploadTokensApi apiInstance = client.uploadTokens();\n    \n    String uploadToken = \"to1tcmSFHeYY5KzyhOqVKMKb\"; // The unique identifier for the token you want information about.\n\n    try {\n      UploadToken result = apiInstance.getToken(uploadToken);\n      System.out.println(result);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling UploadTokensApi#getToken\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/UploadTokensApi.md#list\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class getTokenExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var uploadToken = to1tcmSFHeYY5KzyhOqVKMKb;  // string | The unique identifier for the token you want information about.\n            var apiUploadTokensInstance = apiInstance.UploadTokens();\n            try\n            {\n                // Show upload token\n                UploadToken result = apiUploadTokensInstance.getToken(uploadToken);\n                Debug.WriteLine(result);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling UploadTokensApi.getToken: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: "<?php\n// First install the api client: \"composer require api-video/php-api-client\"\n// Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/UploadTokensApi.md#list\n\nrequire __DIR__ . '/vendor/autoload.php';\n\n$client = new \\ApiVideo\\Client\\Client(\n    'https://ws.api.video',\n    'YOUR_API_KEY',\n    new \\Symfony\\Component\\HttpClient\\Psr18Client()\n); \n\n$uploadTokens = $client->uploadTokens()->list(); "
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/UploadTokensAPI.md#list
+
+            '
+    post:
+      tags:
+      - Upload Tokens
+      summary: Generate an upload token
+      description: Generates an upload token that can be used to replace the API Key. More information can be found here
+      operationId: POST_upload-tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/token-creation-payload'
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/upload-token'
+              examples:
+                response:
+                  value:
+                    token: to1tcmSFHeYY5KzyhOqVKMKb
+                    ttl: 3600
+                    createdAt: '2020-12-02T10:13:19+00:00'
+                    expiresAt: '2020-12-02T11:13:19+00:00'
+        '400':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bad-request'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: createToken
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/UploadTokensApi.md#createToken\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    tokenCreationPayload := *apivideosdk.NewTokenCreationPayload() // TokenCreationPayload | \n\n    \n    res, err := client.UploadTokens.CreateToken(tokenCreationPayload)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `UploadTokens.CreateToken``: %v\\\n\", err)\n    }\n    // response from `CreateToken`: UploadToken\n    fmt.Fprintf(os.Stdout, \"Response from `UploadTokens.CreateToken`: %v\\\n\", res)\n}\n"
+        - language: node
+          code: "// First install the \"@api.video/nodejs-client\" npm package\n// Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/UploadTokensApi.md#createToken\n\nconst client = new ApiVideoClient({ apiKey: \"YOUR_API_KEY\" }); \n\nconst tokenCreationPayload = {\n  ttl: 56, // Time in seconds that the token will be active. A value of 0 means that the token has no expiration date. The default is to have no expiration.\n}; \n\nconst uploadToken = await client.uploadTokens.createToken(tokenCreationPayload);\n"
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/UploadTokensApi.md#createToken\n\nimport apivideo\nfrom apivideo.api import upload_tokens_api\nfrom apivideo.model.bad_request import BadRequest\nfrom apivideo.model.upload_token import UploadToken\nfrom apivideo.model.token_creation_payload import TokenCreationPayload\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = upload_tokens_api.UploadTokensApi(api_client)\n    token_creation_payload = TokenCreationPayload(\n        ttl=0,\n    ) # TokenCreationPayload | \n\n    # example passing only required values which don't have defaults set\n    try:\n        # Generate an upload token\n        api_response = api_instance.create_token(token_creation_payload)\n        pprint(api_response)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling UploadTokensApi->create_token: %s\\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/UploadTokensApi.md#createToken\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.UploadTokensApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    UploadTokensApi apiInstance = client.uploadTokens();\n    \n    TokenCreationPayload tokenCreationPayload = new TokenCreationPayload(); // \n    tokenCreationPayload.setTtl(); // Time in seconds that the token will be active. A value of 0 means that the token has no expiration date. The default is to have no expiration.\n\n\n    try {\n      UploadToken result = apiInstance.createToken(tokenCreationPayload);\n      System.out.println(result);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling UploadTokensApi#createToken\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/UploadTokensApi.md#createToken\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class createTokenExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var tokenCreationPayload = new TokenCreationPayload(); // TokenCreationPayload | \n            var apiUploadTokensInstance = apiInstance.UploadTokens();\n            try\n            {\n                // Generate an upload token\n                UploadToken result = apiUploadTokensInstance.createToken(tokenCreationPayload);\n                Debug.WriteLine(result);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling UploadTokensApi.createToken: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: "<?php\n// First install the api client: \"composer require api-video/php-api-client\"\n// Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/UploadTokensApi.md#deleteToken\n\nrequire __DIR__ . '/vendor/autoload.php';\n\n$client = new \\ApiVideo\\Client\\Client(\n    'https://ws.api.video',\n    'YOUR_API_KEY',\n    new \\Symfony\\Component\\HttpClient\\Psr18Client()\n); \n\n$uploadToken = 'to1tcmSFHeYY5KzyhOqVKMKb'; // The unique identifier for the upload token you want to delete. Deleting a token will make it so the token can no longer be used for authentication.\n$client->uploadTokens()->deleteToken($uploadToken); "
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/UploadTokensAPI.md#createToken
+
+            '
+  /upload-tokens/{uploadToken}:
+    get:
+      tags:
+      - Upload Tokens
+      summary: Retrieve upload token
+      description: Retrieve details about a specific upload token by id.
+      operationId: GET_upload-tokens-uploadToken
+      parameters:
+      - name: uploadToken
+        in: path
+        description: The unique identifier for the token you want information about.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: to1tcmSFHeYY5KzyhOqVKMKb
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/upload-token'
+              examples:
+                response:
+                  value:
+                    token: to1tcmSFHeYY5KzyhOqVKMKb
+                    ttl: 0
+                    createdAt: '2020-12-02T10:13:19+00:00'
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/not-found'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: getToken
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/UploadTokensApi.md#getToken\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    uploadToken := \"to1tcmSFHeYY5KzyhOqVKMKb\" // string | The unique identifier for the token you want information about.\n\n    \n    res, err := client.UploadTokens.GetToken(uploadToken)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `UploadTokens.GetToken``: %v\\\n\", err)\n    }\n    // response from `GetToken`: UploadToken\n    fmt.Fprintf(os.Stdout, \"Response from `UploadTokens.GetToken`: %v\\\n\", res)\n}\n"
+        - language: node
+          code: "// First install the \"@api.video/nodejs-client\" npm package\n// Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/UploadTokensApi.md#getToken\n\nconst client = new ApiVideoClient({ apiKey: \"YOUR_API_KEY\" }); \n\nconst uploadTokenId = 'to1tcmSFHeYY5KzyhOqVKMKb'; // The unique identifier for the token you want information about.\n\nconst uploadToken = await client.uploadTokens.getToken(uploadTokenId);\n"
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/UploadTokensApi.md#getToken\n\nimport apivideo\nfrom apivideo.api import upload_tokens_api\nfrom apivideo.model.not_found import NotFound\nfrom apivideo.model.upload_token import UploadToken\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = upload_tokens_api.UploadTokensApi(api_client)\n    upload_token = \"to1tcmSFHeYY5KzyhOqVKMKb\" # str | The unique identifier for the token you want information about.\n\n    # example passing only required values which don't have defaults set\n    try:\n        # Show upload token\n        api_response = api_instance.get_token(upload_token)\n        pprint(api_response)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling UploadTokensApi->get_token: %s\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/UploadTokensApi.md#getToken\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.UploadTokensApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    UploadTokensApi apiInstance = client.uploadTokens();\n    \n    String uploadToken = \"to1tcmSFHeYY5KzyhOqVKMKb\"; // The unique identifier for the token you want information about.\n\n    try {\n      UploadToken result = apiInstance.getToken(uploadToken);\n      System.out.println(result);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling UploadTokensApi#getToken\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/UploadTokensApi.md#getToken\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class getTokenExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var uploadToken = to1tcmSFHeYY5KzyhOqVKMKb;  // string | The unique identifier for the token you want information about.\n            var apiUploadTokensInstance = apiInstance.UploadTokens();\n            try\n            {\n                // Show upload token\n                UploadToken result = apiUploadTokensInstance.getToken(uploadToken);\n                Debug.WriteLine(result);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling UploadTokensApi.getToken: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: "<?php\n// First install the api client: \"composer require api-video/php-api-client\"\n// Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/UploadTokensApi.md#getToken\n\nrequire __DIR__ . '/vendor/autoload.php';\n\n$client = new \\ApiVideo\\Client\\Client(\n    'https://ws.api.video',\n    'YOUR_API_KEY',\n    new \\Symfony\\Component\\HttpClient\\Psr18Client()\n); \n\n$uploadTokenId = 'to1tcmSFHeYY5KzyhOqVKMKb'; // The unique identifier for the token you want information about.\n$uploadToken = $client->uploadTokens()->getToken($uploadTokenId); "
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/UploadTokensAPI.md#getToken
+
+            '
+    delete:
+      tags:
+      - Upload Tokens
+      summary: Delete an upload token
+      description: Delete an existing upload token. This is especially useful for tokens you may have created that do not expire.
+      operationId: DELETE_upload-tokens-uploadToken
+      parameters:
+      - name: uploadToken
+        in: path
+        description: The unique identifier for the upload token you want to delete. Deleting a token will make it so the token can no longer be used for authentication.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: to1tcmSFHeYY5KzyhOqVKMKb
+      responses:
+        '204':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: No Content
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/not-found'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: deleteToken
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/UploadTokensApi.md#deleteToken\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    uploadToken := \"to1tcmSFHeYY5KzyhOqVKMKb\" // string | The unique identifier for the upload token you want to delete. Deleting a token will make it so the token can no longer be used for authentication.\n\n    \n    err := client.UploadTokens.DeleteToken(uploadToken)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `UploadTokens.DeleteToken``: %v\\\n\", err)\n    }\n}\n"
+        - language: node
+          code: "// First install the \"@api.video/nodejs-client\" npm package\n// Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/UploadTokensApi.md#deleteToken\n\nconst client = new ApiVideoClient({ apiKey: \"YOUR_API_KEY\" }); \n\nconst uploadToken = 'to1tcmSFHeYY5KzyhOqVKMKb'; // The unique identifier for the upload token you want to delete. Deleting a token will make it so the token can no longer be used for authentication.\n  \nawait client.uploadTokens.deleteToken(uploadToken); "
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/UploadTokensApi.md#deleteToken\n\nimport apivideo\nfrom apivideo.api import upload_tokens_api\nfrom apivideo.model.not_found import NotFound\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = upload_tokens_api.UploadTokensApi(api_client)\n    upload_token = \"to1tcmSFHeYY5KzyhOqVKMKb\" # str | The unique identifier for the upload token you want to delete. Deleting a token will make it so the token can no longer be used for authentication.\n\n    # example passing only required values which don't have defaults set\n    try:\n        # Delete an upload token\n        api_instance.delete_token(upload_token)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling UploadTokensApi->delete_token: %s\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/UploadTokensApi.md#deleteToken\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.UploadTokensApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    UploadTokensApi apiInstance = client.uploadTokens();\n    \n    String uploadToken = \"to1tcmSFHeYY5KzyhOqVKMKb\"; // The unique identifier for the upload token you want to delete. Deleting a token will make it so the token can no longer be used for authentication.\n\n    try {\n      apiInstance.deleteToken(uploadToken);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling UploadTokensApi#deleteToken\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/UploadTokensApi.md#deleteToken\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class deleteTokenExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var uploadToken = to1tcmSFHeYY5KzyhOqVKMKb;  // string | The unique identifier for the upload token you want to delete. Deleting a token will make it so the token can no longer be used for authentication.\n            var apiUploadTokensInstance = apiInstance.UploadTokens();\n            try\n            {\n                // Delete an upload token\n                apiUploadTokensInstance.deleteToken(uploadToken);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling UploadTokensApi.deleteToken: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: "<?php\n// First install the api client: \"composer require api-video/php-api-client\"\n// Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/UploadTokensApi.md#getToken\n\nrequire __DIR__ . '/vendor/autoload.php';\n\n$client = new \\ApiVideo\\Client\\Client(\n    'https://ws.api.video',\n    'YOUR_API_KEY',\n    new \\Symfony\\Component\\HttpClient\\Psr18Client()\n); \n\n$uploadTokenId = 'to1tcmSFHeYY5KzyhOqVKMKb'; // The unique identifier for the token you want information about.\n$uploadToken = $client->uploadTokens()->getToken($uploadTokenId); "
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/UploadTokensAPI.md#deleteToken
+
+            '
+components:
+  schemas:
+    token-creation-payload:
+      title: TokenCreationPayload
+      type: object
+      properties:
+        ttl:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Time in seconds that the token will be active. A value of 0 means that the token has no exipration date. The default is to have no expiration.
+          default: 0
+      example:
+        ttl: 3600
+    token-list-response:
+      title: UploadTokens
+      required:
+      - data
+      - pagination
+      type: object
+      properties:
+        data:
+          title: uploadToken
+          type: array
+          items:
+            $ref: '#/components/schemas/upload-token'
+        pagination:
+          $ref: '#/components/schemas/pagination'
+    bad-request:
+      title: BadRequest
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+        problems:
+          description: Returns any additional problems in the request in an array of objects.
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/additional-bad-request-errors'
+    upload-token:
+      title: UploadToken
+      type: object
+      properties:
+        token:
+          type: string
+          description: The unique identifier for the token you will use to authenticate an upload.
+          example: to1tcmSFHeYY5KzyhOqVKMKb
+        ttl:
+          maximum: 2147483647
+          minimum: 0
+          type: integer
+          description: Time-to-live - how long the upload token is valid for.
+        createdAt:
+          type: string
+          description: When the token was created, displayed in ATOM UTC format.
+          format: date-time
+          example: '2019-12-16T08:25:51+00:00'
+        expiresAt:
+          type:
+          - string
+          - 'null'
+          description: When the token expires, displayed in ATOM UTC format.
+          format: date-time
+          example: '2019-12-16T09:25:51+00:00'
+    too-many-requests:
+      title: TooManyRequests
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+    pagination-link:
+      title: PaginationLink
+      type: object
+      properties:
+        rel:
+          type: string
+        uri:
+          type: string
+          format: uri
+    additional-bad-request-errors:
+      title: BadRequest
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+    pagination:
+      title: Pagination
+      required:
+      - links
+      type: object
+      properties:
+        itemsTotal:
+          type: integer
+          description: Total number of items that exist.
+          readOnly: true
+        pagesTotal:
+          type: integer
+          description: Number of items listed in the current page.
+          readOnly: true
+        pageSize:
+          type: integer
+          description: Maximum number of item per page.
+          readOnly: true
+        currentPage:
+          type: integer
+          description: The current page index.
+          readOnly: true
+        currentPageItems:
+          type: integer
+          description: The number of items on the current page.
+          readOnly: true
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/pagination-link'
+      example:
+        itemsTotal: 123
+        pagesTotal: 7
+        pageSize: 20
+        currentPage: 3
+        currentPageItems: 20
+        links:
+          first:
+            rel: first
+            uri: /videos/search?currentPage=1&pageSize=20
+          previous:
+            rel: previous
+            uri: /videos/search?currentPage=2&pageSize=20
+          next:
+            rel: next
+            uri: /videos/search?currentPage=4&pageSize=20
+          last:
+            rel: last
+            uri: /videos/search?currentPage=6&pageSize=20
+    not-found:
+      title: NotFound
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+  parameters:
+    current-page:
+      name: currentPage
+      in: query
+      description: 'Choose the number of search results to return per page. Minimum value: 1'
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        default: 1
+      example: 2
+    page-size:
+      name: pageSize
+      in: query
+      description: Results per page. Allowed values 1-100, default is 25.
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        default: 25
+      example: 30
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    apiKey:
+      type: http
+      scheme: basic
+x-stoplight:
+  id: ybzk39fiws46g
+x-client-base-paths:
+  production: https://ws.api.video
+  sandbox: https://sandbox.api.video
+x-doctave:
+  explorer-enabled: true
+  proxy-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - curl
+  - go
+  - node
+  - php
+  - python

@@ -1,0 +1,1405 @@
+openapi: 3.2.0
+info:
+  title: api.video Analytics API
+  description: api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
+  version: '1'
+servers:
+- url: https://ws.api.video
+  description: Production server
+- url: https://sandbox.api.video
+  description: Test server `all videos are watermarked, and deleted after 24 hours.
+tags:
+- name: Analytics
+paths:
+  /data/metrics/{metric}/{aggregation}:
+    get:
+      tags:
+      - Analytics
+      summary: Retrieve aggregated metrics
+      description: Retrieve time-based and countable metrics like average watch time or the number of impressions over a certain period of time.
+      operationId: GET_aggregated-metrics
+      parameters:
+      - name: metric
+        in: path
+        description: 'Use this path parameter to select a metric that you want analytics for.
+
+
+          - `play` is the number of times your content has been played. You can use the aggregations `count`, `rate`, and `total` with the `play` metric.
+
+          - `start` is the number of times playback was started. You can use the aggregation `count` with this metric.
+
+          - `end` is the number of times playback has ended with the content watch until the end. You can use the aggregation `count` with this metric.
+
+          - `impression` is the number of times your content has been loaded and was ready for playback. You can use the aggregation `count` with this metric.
+
+          - `impression-time` is the time in milliseconds that your content was loading for until the first video frame is displayed. You can use the aggregations `average` and `sum` with this metric.
+
+          - `watch-time` is the cumulative time in seconds that the user has spent watching your content. You can use the aggregations `average` and `sum` with this metric.
+
+          - `ccv`: is the number of concurrent viewers, or users watching at the same time.
+
+          - `view`: the total number of viewers until this point in time.
+
+          '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - play
+          - start
+          - end
+          - impression
+          - impression-time
+          - watch-time
+          - ccv
+          - view
+      - name: aggregation
+        in: path
+        description: "Use this path parameter to define a way of collecting data for the metric that you want analytics for.\n\n- `count` returns the overall number of events for the `play` metric.\n- `rate` returns the ratio that calculates the number of plays your content receives divided by its impressions. This aggregation can be used only with the `play` metric.\n- `total` calculates the total number of events for the `play` metric. \n- `average` calculates an average value for the selected metric.\n- `sum` adds up the total value of the select metric.\n- `peak` shows the highest value of the `ccv` metric in the timeframe of your request. You can use this aggregation only with the `ccv` metric.\n- `live` shows the highest value of the `ccv` metric from the last 20 seconds. You can use this aggregation only with the `ccv` metric.\n"
+        style: simple
+        explode: false
+        required: true
+        schema:
+          type: string
+          enum:
+          - count
+          - rate
+          - total
+          - average
+          - sum
+          - peak
+          - live
+      - name: from
+        in: query
+        description: 'Use this query parameter to define the starting date-time of the period you want analytics for.
+
+
+          - If you do not set a value for `from`, the default assigned value is 1 day ago, based on the `to` parameter.
+
+          - The maximum value is 30 days ago.
+
+          - The value you provide should follow the ATOM date-time format: `2024-02-05T00:00:00+01:00`
+
+          - The API ignores this parameter when you call `/data/metrics/play/total`.
+
+          '
+        style: form
+        explode: false
+        schema:
+          type: string
+          format: date-time
+        example: 2024-02-05 00:00:00+01:00
+      - name: to
+        in: query
+        description: 'Use this query parameter to define the ending date-time of the period you want analytics for.
+
+
+          - If you do not set a value for `to`, the default assigned value is `now`.
+
+          - The API ignores this parameter when you call `/data/metrics/play/total`.
+
+          - The value for `to` is a non-inclusive value: the API returns data **before** the date-time that you set.
+
+          '
+        style: form
+        explode: false
+        schema:
+          type: string
+          format: date-time
+        example: 2024-02-06 00:00:00+01:00
+      - name: unique
+        in: query
+        description: "Use this query parameter to control how viewer data is counted:\n\n- `true` means that a single user watching multiple times counts as 1 unique viewer\n- `false` means that all views count, even if from the same user.\n\nThe API accepts this parameter only when you use the `ccv` or `view` metric.          \n\nViewers are unique for 1 day.\n\nThe API determines uniqueness based on a viewer's `user-agent` and IP address. This means that the API can filter viewers using multiple tabs to watch the same video multiple times, but cannot filter for viewers who use multiple browsers to watch the same content multiple times.\n"
+        style: form
+        explode: false
+        schema:
+          type: boolean
+        example: true
+      - name: viewDuration
+        in: query
+        description: "Use this query parameter to define how many seconds a view has to last to be counted in analytics data.\n\n- You can only use this parameter with the `view` metric.\n- The accepted values are `3s`, `5s`, `10s`, and `30s`. \n- If you do not set this parameter, the API defaults to `5s`.\n"
+        style: form
+        explode: false
+        schema:
+          type: string
+          enum:
+          - 3s
+          - 5s
+          - 10s
+          - 30s
+        example: 5s
+      - $ref: '#/components/parameters/filterBy'
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/analytics-aggregated-metrics-response'
+              examples:
+                Impression time from a certain date:
+                  value:
+                    context:
+                      metric: impression
+                      aggregation: count
+                      timeframe:
+                        from: 2024-05-28 11:15:07+00:00
+                        to: 2024-05-29 11:15:07+00:00
+                    data: 346.5
+        '400':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                title: Bad request error
+                $ref: '#/components/schemas/analytics-plays-400-error'
+              examples:
+                Invalid attribute:
+                  description: This error occurs when a parameter you provided does not exist, or isn't correct for this endpoint, has an invalid value.
+                  value:
+                    type: https://docs.api.video/reference/invalid-attribute
+                    title: An attribute is invalid.
+                    status: 400
+                    detail: This value must be of type string.
+                    name: metric
+                Invalid query parameter:
+                  description: This error occurs when a query parameter you provided does not exist, isn't correct for this endpoint, or has an invalid value.
+                  value:
+                    type: https://docs.api.video/reference/request-invalid-query-parameter
+                    title: A query parameter is invalid.
+                    status: 400
+                    detail: This field was not expected.
+                    name: from:2024-05-20T09:15:05+02:00
+                Referrer too long:
+                  description: Occurs when the value of `referrer` in your query is too long.
+                  value:
+                    type: https://docs.api.video/reference/request-invalid-query-parameter
+                    title: A query parameter is invalid.
+                    status: 400
+                    detail: This value should not contain more than 2048 characters.
+                    name: filterBy[referrer]
+                Invalid view duration:
+                  description: Occurs when the value of `viewDuration` is incorrect.
+                  value:
+                    type: https://docs.api.video/reference/request-invalid-query-parameter
+                    title: A query parameter is invalid.
+                    status: 400
+                    detail: This view duration is invalid. Use one of "3s", "5s", "10s", "30s".
+                    name: viewDuration
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Unrecognized request URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unrecognized-request-url'
+              examples:
+                Unrecognized request URL:
+                  value:
+                    type: https://docs.api.video/reference/unrecognized-request-url
+                    title: Unrecognized request URL.
+                    status: 404
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: getAggregatedMetrics
+      x-group-parameters: true
+      x-doctave:
+        code-samples:
+        - language: java
+          code: 'FilterBy2 filterBy = new FilterBy2();
+
+
+            filterBy.setBrowser(Collections.singletonList("Chrome"));
+
+            filterBy.setContinent(Arrays.asList(FilterBy2.ContinentEnum.NA, FilterBy2.ContinentEnum.EU));
+
+            filterBy.setMediaType(FilterBy2.MediaTypeEnum.VIDEO);
+
+            filterBy.setTag("test");
+
+
+
+            AnalyticsAggregatedMetricsResponse res = apiClient.analytics().getAggregatedMetrics("play", "total").filterBy(filterBy).execute();
+
+            System.out.println(res.getData());
+
+            '
+        - language: node
+          code: "const res = await client.analytics.getAggregatedMetrics({\n  aggregation: 'total',\n  metric: 'play',\n  filterBy: {\n    browser: ['chrome', 'firefox'],\n    continent: ['EU', 'AF'],\n    tag: 'test',\n  },\n});\nconsole.log(res.data);\n"
+        - language: csharp
+          code: "FilterBy2 filterBy = new FilterBy2\n{\n    continent = new List<string> { \"EU\", \"US\" },\n    devicetype = new List<string> { \"phone\" },\n    tag = \"test\"\n};\nAnalyticsAggregatedMetricsResponse res = apiClient.Analytics()\n    .getAggregatedMetrics(\"play\", \"total\").From(new DateTime(2024, 7, 1)).FilterBy(filterBy).execute();\n"
+        - language: go
+          code: "res, err := cl.Analytics.GetAggregatedMetrics(\"play\", \"day\", AnalyticsApiGetAggregatedMetricsRequest{\n  filterBy: &FilterBy2{\n    Continent: &[]string{\"EU\", \"AA\"},\n    DeviceType: &[]string{\"computer\", \"phone\"},\n    Tag: PtrString(\"tag\"),\n  },\n})\n"
+        - language: python
+          code: "res = self.api.get_aggregated_metrics(metric='play', aggregation='count', filter_by=FilterBy2(\n        device_type=[\"computer\", \"phone\"],\n        tag=\"test\",\n    ),\n)\n"
+        - language: swift
+          code: "AnalyticsAPI.getAggregatedMetrics(\n        metric: .play,\n        aggregation: .total,\n        filterBy: FilterBy2(\n            continent: [.an, .eu],\n            tag: \"test\"\n        )\n    ) { analytics, error in\n        // ...\n    }\n"
+  /data/buckets/{metric}/{breakdown}:
+    get:
+      tags:
+      - Analytics
+      summary: Retrieve metrics in a breakdown of dimensions
+      description: Retrieve detailed analytics play-rate and number of impressions segmented by dimensions like country or device type.
+      operationId: GET_metrics-breakdown
+      parameters:
+      - name: metric
+        in: path
+        description: 'Use this path parameter to select a metric that you want analytics for.
+
+
+          - `play` is the number of times your content has been played.
+
+          - `play-rate` is the ratio that calculates the number of plays your content receives divided by its impressions.
+
+          - `play-total` is the total number of times a specific content has been played. You can only use the `media-id` breakdown with this metric.
+
+          - `start` is the number of times playback was started.
+
+          - `end` is the number of times playback has ended with the content watch until the end.
+
+          - `impression` is the number of times your content has been loaded and was ready for playback.
+
+          - `ccv-peak` is the highest number of concurrent viewers in the timeframe of your request.
+
+          - `ccv-average` is the average number of concurrent viewers in the timeframe of your request.
+
+          - `view` is the total number of viewers until this point in time.
+
+          '
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - play
+          - play-rate
+          - play-total
+          - start
+          - end
+          - impression
+          - ccv-peak
+          - ccv-average
+          - view
+      - name: breakdown
+        in: path
+        description: "Use this path parameter to define a dimension for segmenting analytics data. You must use `kebab-case` for path parameters.\n\nThese are the available dimensions:\n\n- `media-id`: Returns analytics based on the unique identifiers of a video or a live stream.\n- `media-type`: Returns analytics based on the type of content. Possible values: `video` and `live-stream`. \n- `continent`: Returns analytics based on the viewers' continent. The list of supported continents names are based on the [GeoNames public database](https://www.geonames.org/countries/). Possible values are: `AS`, `AF`, `NA`, `SA`, `AN`, `EU`, `AZ`. \n- `country`: Returns analytics based on the viewers' country. The list of supported country names are based on the [GeoNames public database](https://www.geonames.org/countries/).\n- `device-type`: Returns analytics based on the type of device used by the viewers. Response values can include: `computer`, `phone`, `tablet`, `tv`, `console`, `wearable`, `unknown`.\n- `operating-system`: Returns analytics based on the operating system used by the viewers. Response values can include `windows`, `mac osx`, `android`, `ios`, `linux`.\n- `browser`: Returns analytics based on the browser used by the viewers. Response values can include `chrome`, `firefox`, `edge`, `opera`.\n- `referrer`: Returns the URL where the view originates from, for example a website where the video is embedded. View events from Android and iOS return empty strings as the value for `referrer`.\n"
+        style: simple
+        explode: false
+        required: true
+        schema:
+          type: string
+          enum:
+          - media-id
+          - media-type
+          - continent
+          - country
+          - device-type
+          - operating-system
+          - browser
+          - referrer
+      - name: from
+        in: query
+        description: 'Use this query parameter to define the starting date-time of the period you want analytics for.
+
+
+          - If you do not set a value for `from`, the default assigned value is 1 day ago, based on the `to` parameter.
+
+          - The maximum value is 30 days ago.
+
+          - The value you provide should follow the ATOM date-time format: `2024-02-05T00:00:00+01:00`
+
+          '
+        style: form
+        explode: false
+        schema:
+          type: string
+          format: date-time
+        example: 2024-02-05 00:00:00+01:00
+      - name: to
+        in: query
+        description: 'Use this query parameter to define the ending date-time of the period you want analytics for.
+
+
+          - If you do not set a value for `to`, the default assigned value is `now`.
+
+          - The value for `to` is a non-inclusive value: the API returns data **before** the date-time that you set.
+
+          '
+        style: form
+        explode: false
+        schema:
+          type: string
+          format: date-time
+        example: 2024-02-06 00:00:00+01:00
+      - name: sortBy
+        in: query
+        description: 'Use this parameter to choose which field the API will use to sort the analytics data.
+
+
+          These are the available fields to sort by:
+
+
+          - `metricValue`: Sorts the results based on the **metric** you selected in your request.
+
+          - `dimensionValue`: Sorts the results based on the **dimension** you selected in your request.
+
+          '
+        style: form
+        explode: false
+        schema:
+          type: string
+          enum:
+          - metricValue
+          - dimensionValue
+        example: metricValue
+      - name: sortOrder
+        in: query
+        description: 'Use this parameter to define the sort order of results.
+
+
+          These are the available sort orders:
+
+
+          - `asc`: Sorts the results in ascending order: `A to Z` and `0 to 9`.
+
+          - `desc`: Sorts the results in descending order: `Z to A` and `9 to 0`.
+
+          '
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+        example: asc
+      - name: unique
+        in: query
+        description: "Use this query parameter to control how viewer data is counted:\n\n- `true` means that a single user watching multiple times counts as 1 unique viewer\n- `false` means that all views count, even if from the same user.\n\nThe API accepts this parameter only when you use the `ccv-peak`, `ccv-average`, or `view` metric.          \n\nViewers are unique for 1 day.\n\nThe API determines uniqueness based on a viewer's `user-agent` and IP address. This means that the API can filter viewers using multiple tabs to watch the same video multiple times, but cannot filter for viewers who use multiple browsers to watch the same content multiple times.\n"
+        style: form
+        explode: false
+        schema:
+          type: boolean
+        example: true
+      - name: viewDuration
+        in: query
+        description: "Use this query parameter to define how many seconds a view has to last to be counted in analytics data.\n\n- You can only use this parameter together with the `view` metric.\n- The accepted values are `3s`, `5s`, `10s`, and `30s`. \n- If you do not set this parameter, the API defaults to `5s`.\n"
+        style: form
+        explode: false
+        schema:
+          type: string
+          enum:
+          - 3s
+          - 5s
+          - 10s
+          - 30s
+      - $ref: '#/components/parameters/filterBy'
+      - $ref: '#/components/parameters/current-page'
+      - $ref: '#/components/parameters/page-size'
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/analytics-metrics-breakdown-response'
+              examples:
+                Number of plays in a country over a specific timeframe:
+                  value:
+                    context:
+                      metric: play
+                      breakdown: country
+                      timeframe:
+                        from: '2024-04-28T07:15:05+00:00'
+                        to: '2024-05-29T11:25:37+00:00'
+                    data:
+                    - metricValue: 7
+                      dimensionValue: FR
+                    pagination:
+                      currentPage: 1
+                      currentPageItems: 1
+                      pageSize: 25
+                      pagesTotal: 1
+                      itemsTotal: 1
+                      links:
+                      - rel: self
+                        uri: /data/buckets/play/country?from=2024-04-28T09%3A15%3A05%2B02%3A00&currentPage=1&pageSize=25
+                      - rel: first
+                        uri: /data/buckets/play/country?from=2024-04-28T09%3A15%3A05%2B02%3A00&currentPage=1&pageSize=25
+                      - rel: last
+                        uri: /data/buckets/play/country?from=2024-04-28T09%3A15%3A05%2B02%3A00&currentPage=1&pageSize=25
+        '400':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                title: Bad request error
+                $ref: '#/components/schemas/analytics-plays-400-error'
+              examples:
+                Invalid attribute:
+                  description: This error occurs when a parameter you provided does not exist, or isn't correct for this endpoint, has an invalid value.
+                  value:
+                    type: https://docs.api.video/reference/invalid-attribute
+                    title: An attribute is invalid.
+                    status: 400
+                    detail: This value must be of type string.
+                    name: metric
+                Invalid query parameter:
+                  description: This error occurs when a query parameter you provided does not exist, isn't correct for this endpoint, or has an invalid value.
+                  value:
+                    type: https://docs.api.video/reference/request-invalid-query-parameter
+                    title: A query parameter is invalid.
+                    status: 400
+                    detail: This field was not expected.
+                    name: from:2024-05-20T09:15:05+02:00
+                Referrer too long:
+                  description: Occurs when the value of `referrer` in your query is too long.
+                  value:
+                    type: https://docs.api.video/reference/request-invalid-query-parameter
+                    title: A query parameter is invalid.
+                    status: 400
+                    detail: This value should not contain more than 2048 characters.
+                    name: filterBy[referrer]
+                Invalid view duration:
+                  description: Occurs when the value of `viewDuration` is incorrect.
+                  value:
+                    type: https://docs.api.video/reference/request-invalid-query-parameter
+                    title: A query parameter is invalid.
+                    status: 400
+                    detail: This view duration is invalid. Use one of "3s", "5s", "10s", "30s".
+                    name: viewDuration
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Unrecognized request URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unrecognized-request-url'
+              examples:
+                Unrecognized request URL:
+                  value:
+                    type: https://docs.api.video/reference/unrecognized-request-url
+                    title: Unrecognized request URL.
+                    status: 404
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: getMetricsBreakdown
+      x-group-parameters: true
+      x-client-paginated: true
+      x-doctave:
+        code-samples:
+        - language: java
+          code: "FilterBy2 filterBy = new FilterBy2();\n\nfilterBy.setBrowser(Collections.singletonList(\"Chrome\"));\nfilterBy.setContinent(Arrays.asList(FilterBy2.ContinentEnum.NA, FilterBy2.ContinentEnum.EU));\nfilterBy.setMediaType(FilterBy2.MediaTypeEnum.VIDEO);\nfilterBy.setTag(\"test\");\n\nPage<AnalyticsMetricsBreakdownResponseData> res = apiClient.analytics().getMetricsBreakdown(\"play\", \"media-id\").filterBy(filterBy).pageSize(30).execute();\nfor (AnalyticsMetricsBreakdownResponseData item : res.getItems()) {\n    System.out.println(item.getDimensionValue() + \": \" + item.getMetricValue());\n}\n"
+        - language: node
+          code: "const res = await client.analytics.getMetricsBreakdown({\n  breakdown: 'continent',\n  metric: 'play',\n  filterBy: {\n    browser: ['chrome', 'firefox'],\n    continent: ['EU', 'AF'],\n    tag: 'test',\n  },\n});\nconsole.log(res.data);\n"
+        - language: csharp
+          code: "FilterBy2 filterBy = new FilterBy2\n{\n    continent = new List<string> { \"EU\", \"US\" },\n    devicetype = new List<string> { \"phone\" },\n    tag = \"test\"\n};\nPage<AnalyticsMetricsBreakdownResponseData> page = apiClient.Analytics()\n    .getMetricsBreakdown(\"play\", \"continent\").From(new DateTime(2024, 7, 1)).FilterBy(filterBy).execute();\n"
+        - language: go
+          code: "res, err := cl.Analytics.GetMetricsBreakdown(\"play\", \"continent\", AnalyticsApiGetMetricsBreakdownRequest{\n  filterBy: &FilterBy2{\n    Continent: &[]string{\"EU\", \"AA\"},\n    DeviceType: &[]string{\"computer\", \"phone\"},\n    Tag: \tPtrString(\"tag\"),\n  },\n})\n"
+        - language: python
+          code: "res = self.api.get_metrics_breakdown(metric='play', breakdown='continent', filter_by=FilterBy2(\n        device_type=[\"computer\", \"phone\"],\n        tag=\"test\",\n    ),\n)\n"
+        - language: swift
+          code: "AnalyticsAPI.getMetricsBreakdown(\n    metric: .play,\n    breakdown: .browser,\n    filterBy: FilterBy2(\n        continent: [.an, .eu],\n        tag: \"test\"\n    )\n) { analytics, error in\n    // ...\n}\n"
+  /data/timeseries/{metric}:
+    get:
+      tags:
+      - Analytics
+      summary: Retrieve metrics over time
+      description: Retrieve countable metrics like the number of plays or impressions, grouped by the time at which they occurred
+      operationId: GET_metrics-over-time
+      parameters:
+      - name: metric
+        in: path
+        description: "Use this path parameter to select a metric that you want analytics for.\n\n- `play` is the number of times your content has been played.\n- `play-rate` is the ratio that calculates the number of plays your content receives divided by its impressions.\n- `start` is the number of times playback was started.\n- `end` is the number of times playback has ended with the content watch until the end.\n- `impression` is the number of times your content has been loaded and was ready for playback.\n- `ccv-peak` is the highest number of concurrent viewers in the timeframe of your request.\n- `ccv-average` is the average number of concurrent viewers in the timeframe of your request.\n- `view` is the total number of viewers. \n"
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - play
+          - play-rate
+          - start
+          - end
+          - impression
+          - ccv-peak
+          - ccv-average
+          - view
+      - name: from
+        in: query
+        description: 'Use this query parameter to define the starting date-time of the period you want analytics for.
+
+
+          - If you do not set a value for `from`, the default assigned value is 1 day ago, based on the `to` parameter.
+
+          - The maximum value is 30 days ago.
+
+          - The value you provide should follow the ATOM date-time format: `2024-02-05T00:00:00+01:00`
+
+          '
+        style: form
+        explode: false
+        schema:
+          type: string
+          format: date-time
+        example: 2024-02-05 00:00:00+01:00
+      - name: to
+        in: query
+        description: 'Use this query parameter to define the ending date-time of the period you want analytics for.
+
+
+          - If you do not set a value for `to`, the default assigned value is `now`.
+
+          - The value for `to` is a non-inclusive value: the API returns data **before** the date-time that you set.
+
+          '
+        style: form
+        explode: false
+        schema:
+          type: string
+          format: date-time
+        example: 2024-02-06 00:00:00+01:00
+      - name: interval
+        in: query
+        description: 'Use this query parameter to define the granularity of the data. Possible values: `minute`, `hour`, `day`.
+
+
+          - If you do not set a value for `interval`, and the period you set using the `from` and `to` parameters is less than or equals to 2 days, then the default assigned value is `hour`. Otherwise the API sets it to `day`.
+
+          - When you set `minute` as interval, the timeframe you define with the `from` and `to` parameters must be less than 60 minutes.
+
+          '
+        style: form
+        explode: false
+        schema:
+          type: string
+          enum:
+          - minute
+          - hour
+          - day
+        example: hour
+      - name: sortBy
+        in: query
+        description: 'Use this parameter to choose which field the API will use to sort the analytics data.
+
+
+          These are the available fields to sort by:
+
+
+          - `metricValue`: Sorts the results based on the **metric** you selected in your request.
+
+          - `emittedAt`: Sorts the results based on the **timestamp** of the event in ATOM date-time format.
+
+          '
+        style: form
+        explode: false
+        schema:
+          type: string
+          enum:
+          - metricValue
+          - emittedAt
+        example: metricValue
+      - name: sortOrder
+        in: query
+        description: 'Use this parameter to define the sort order of results.
+
+
+          These are the available sort orders:
+
+
+          - `asc`: Sorts the results in ascending order: `A to Z` and `0 to 9`.
+
+          - `desc`: Sorts the results in descending order: `Z to A` and `9 to 0`.
+
+          '
+        required: false
+        style: form
+        explode: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+        example: asc
+      - name: unique
+        in: query
+        description: "Use this query parameter to control how viewer data is counted:\n\n- `true` means that a single user watching multiple times counts as 1 unique viewer\n- `false` means that all views count, even if from the same user.\n\nThe API accepts this parameter only when you use the `ccv-peak`, `ccv-average`, or `view` metric.          \n\nViewers are unique for 1 day.\n\nThe API determines uniqueness based on a viewer's `user-agent` and IP address. This means that the API can filter viewers using multiple tabs to watch the same video multiple times, but cannot filter for viewers who use multiple browsers to watch the same content multiple times.\n"
+        style: form
+        explode: false
+        schema:
+          type: boolean
+        example: true
+      - name: viewDuration
+        in: query
+        description: "Use this query parameter to define how many seconds a view has to last to be counted in analytics data.\n\n- You can only use this parameter together with the `view` metric.\n- The accepted values are `3s`, `5s`, `10s`, and `30s`. \n- If you do not set this parameter, the API defaults to `5s`.\n"
+        style: form
+        explode: false
+        schema:
+          type: string
+          enum:
+          - 3s
+          - 5s
+          - 10s
+          - 30s
+      - $ref: '#/components/parameters/filterBy'
+      - $ref: '#/components/parameters/current-page'
+      - $ref: '#/components/parameters/page-size'
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/analytics-metrics-over-time-response'
+              examples:
+                Impression time from a certain date:
+                  value:
+                    context:
+                      metric: play
+                      interval: hour
+                      timeframe:
+                        from: '2024-05-28T11:08:39+00:00'
+                        to: '2024-05-29T11:08:39+00:00'
+                    data:
+                    - emittedAt: 2024-05-29T07+00:00:00:00
+                      metricValue: 2
+                    - emittedAt: 2024-05-29T08+00:00:00:00
+                      metricValue: 1
+                    - emittedAt: 2024-05-29T09+00:00:00:00
+                      metricValue: 1
+                    pagination:
+                      currentPage: 1
+                      currentPageItems: 3
+                      pageSize: 25
+                      pagesTotal: 1
+                      itemsTotal: 3
+                      links:
+                      - rel: self
+                        uri: /data/timeseries/play?currentPage=1&pageSize=25
+                      - rel: first
+                        uri: /data/timeseries/play?currentPage=1&pageSize=25
+                      - rel: last
+                        uri: /data/timeseries/play?currentPage=1&pageSize=25
+        '400':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                title: Bad request error
+                $ref: '#/components/schemas/analytics-plays-400-error'
+              examples:
+                Invalid attribute:
+                  description: This error occurs when a parameter you provided does not exist, or isn't correct for this endpoint, has an invalid value.
+                  value:
+                    type: https://docs.api.video/reference/invalid-attribute
+                    title: An attribute is invalid.
+                    status: 400
+                    detail: This value must be of type string.
+                    name: metric
+                Invalid query parameter:
+                  description: This error occurs when a query parameter you provided does not exist, isn't correct for this endpoint, or has an invalid value.
+                  value:
+                    type: https://docs.api.video/reference/request-invalid-query-parameter
+                    title: A query parameter is invalid.
+                    status: 400
+                    detail: This field was not expected.
+                    name: from:2024-05-20T09:15:05+02:00
+                Invalid interval:
+                  description: Occurs when the value you set for `interval` is not `minute`, `hour`, or `day`.
+                  value:
+                    type: https://docs.api.video/reference/request-invalid-query-parameter
+                    title: A query parameter is invalid.
+                    status: 400
+                    detail: This interval is invalid. Use one of "minute", "hour", "day".
+                    name: interval
+                Timeframe does not match interval:
+                  description: Occurs when you set `minute` as interval, and a timeframe that is longer than 60 minutes.
+                  value:
+                    type: https://docs.api.video/reference/request-invalid-query-parameter
+                    title: A query parameter is invalid.
+                    status: 400
+                    detail: This interval cannot be used with a timeframe over 60 minutes.
+                    name: interval
+                Referrer too long:
+                  description: Occurs when the value of `referrer` in your query is too long.
+                  value:
+                    type: https://docs.api.video/reference/request-invalid-query-parameter
+                    title: A query parameter is invalid.
+                    status: 400
+                    detail: This value should not contain more than 2048 characters.
+                    name: filterBy[referrer]
+                Invalid view duration:
+                  description: Occurs when the value of `viewDuration` is incorrect.
+                  value:
+                    type: https://docs.api.video/reference/request-invalid-query-parameter
+                    title: A query parameter is invalid.
+                    status: 400
+                    detail: This view duration is invalid. Use one of "3s", "5s", "10s", "30s".
+                    name: viewDuration
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Unrecognized request URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unrecognized-request-url'
+              examples:
+                Unrecognized request URL:
+                  value:
+                    type: https://docs.api.video/reference/unrecognized-request-url
+                    title: Unrecognized request URL.
+                    status: 404
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: getMetricsOverTime
+      x-group-parameters: true
+      x-client-paginated: true
+      x-doctave:
+        code-samples:
+        - language: java
+          code: "FilterBy2 filterBy = new FilterBy2();\n\nfilterBy.setBrowser(Collections.singletonList(\"Chrome\"));\nfilterBy.setContinent(Arrays.asList(FilterBy2.ContinentEnum.NA, FilterBy2.ContinentEnum.EU));\nfilterBy.setMediaType(FilterBy2.MediaTypeEnum.VIDEO);\nfilterBy.setTag(\"test\");\n\nPage<AnalyticsMetricsOverTimeResponseData> res = apiClient.analytics().getMetricsOverTime(\"play\").filterBy(filterBy).pageSize(30).execute();\nfor (AnalyticsMetricsOverTimeResponseData item : res.getItems()) {\n    System.out.println(item.getEmittedAt() + \": \" + item.getMetricValue());\n}\n"
+        - language: node
+          code: "const res = await client.analytics.getMetricsOverTime({\n  metric: 'play',\n  filterBy: {\n    mediaType: 'video',\n    browser: ['chrome', 'firefox'],\n    continent: ['EU', 'AF'],\n    tag: \"test\",\n  },\n});\n\nconsole.log(res);\n"
+        - language: csharp
+          code: "FilterBy2 filterBy = new FilterBy2\n{\n    continent = new List<string> { \"EU\", \"US\" },\n    devicetype = new List<string> { \"phone\" },\n    tag = \"test\"\n};\nPage<AnalyticsMetricsOverTimeResponseData> res = apiClient.Analytics()\n    .getMetricsOverTime(\"play\").From(new DateTime(2024, 7, 1)).FilterBy(filterBy).execute();\n"
+        - language: go
+          code: "res, err := cl.Analytics.GetMetricsOverTime(\"play\", AnalyticsApiGetMetricsOverTimeRequest{\n  filterBy: &FilterBy2{\n    Continent: &[]string{\"EU\", \"AA\"},\n    DeviceType: &[]string{\"computer\", \"phone\"},\n    Tag: \tPtrString(\"tag\"),\n  },\n})\n"
+        - language: python
+          code: "res = self.api.get_metrics_over_time(metric='play', filter_by=FilterBy2(\n        device_type=[\"computer\", \"phone\"],\n        tag=\"test\",\n    ),\n)\n"
+        - language: swift
+          code: "AnalyticsAPI.getMetricsOverTime(\n        metric: .play,\n        filterBy: FilterBy2(\n            continent: [.an, .eu],\n            tag: \"test\"\n        )\n    ) { analytics, error in\n        // ...\n    }\n"
+components:
+  parameters:
+    current-page:
+      name: currentPage
+      in: query
+      description: 'Choose the number of search results to return per page. Minimum value: 1'
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        default: 1
+      example: 2
+    page-size:
+      name: pageSize
+      in: query
+      description: Results per page. Allowed values 1-100, default is 25.
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        default: 25
+      example: 30
+    filterBy:
+      name: filterBy
+      description: "Use this parameter to filter the API's response based on different data dimensions. You can serialize filters in your query to receive more detailed breakdowns of your analytics.\n\n- If you do not set a value for `filterBy`, the API returns the full dataset for your project.\n- The API only accepts the `mediaId` and `mediaType` filters when you call `/data/metrics/play/total` or `/data/buckets/play-total/media-id`.\n\nThese are the available breakdown dimensions:\n\n- `mediaId`: Returns analytics based on the unique identifiers of a video or a live stream.\n- `mediaType`: Returns analytics based on the type of content. Possible values: `video` and `live-stream`. \n- `continent`: Returns analytics based on the viewers' continent. The list of supported continents names are based on the [GeoNames public database](https://www.geonames.org/countries/). You must use the ISO-3166 alpha2 format, for example `EU`. Possible values are: `AS`, `AF`, `NA`, `SA`, `AN`, `EU`, `AZ`. \n- `country`: Returns analytics based on the viewers' country. The list of supported country names are based on the [GeoNames public database](https://www.geonames.org/countries/). You must use the ISO-3166 alpha2 format, for example `FR`.\n- `deviceType`: Returns analytics based on the type of device used by the viewers. Response values can include: `computer`, `phone`, `tablet`, `tv`, `console`, `wearable`, `unknown`.\n- `operatingSystem`: Returns analytics based on the operating system used by the viewers. Response values can include `windows`, `mac osx`, `android`, `ios`, `linux`.\n- `browser`: Returns analytics based on the browser used by the viewers. Response values can include `chrome`, `firefox`, `edge`, `opera`.\n- `tag`: Returns analytics for videos using this tag. This filter only accepts a single value and is case sensitive. Read more about tagging your videos [here](https://docs.api.video/vod/tags-metadata).\n- `referrer`: Filters data based on the URL where the view is originating from. Accepts an empty string as a value to filter view events where no referrer is available.\n"
+      in: query
+      required: false
+      example: filterBy[country]=FR&filterBy[operatingSystem]=windows&filterBy[browser][]=firefox&filterBy[browser][]=chrome&filterBy[tag]=Cool videos
+      style: deepObject
+      x-is-deep-object: true
+      explode: true
+      schema:
+        x-is-deep-object: true
+        type: object
+        properties:
+          mediaId:
+            type: array
+            items:
+              type: string
+            description: Returns analytics based on the unique identifiers of a video or a live stream.
+            example:
+            - vi4blUQJFrYWbaG44NChkH27
+          mediaType:
+            type: string
+            enum:
+            - video
+            - live-stream
+            example: video
+          continent:
+            type: array
+            items:
+              type: string
+              enum:
+              - AS
+              - AF
+              - NA
+              - SA
+              - AN
+              - EU
+              - AZ
+            description: Returns analytics based on the viewers' continent. The list of supported continents names are based on the [GeoNames public database](https://www.geonames.org/countries/). You must use the ISO-3166 alpha2 format, for example `EU`.
+            example:
+            - EU
+          country:
+            description: Returns analytics based on the viewers' country. The list of supported country names are based on the [GeoNames public database](https://www.geonames.org/countries/). You must use the ISO-3166 alpha2 format, for example `FR`.
+            type: array
+            items:
+              type: string
+            example:
+            - FR
+          deviceType:
+            type: array
+            items:
+              type: string
+            description: 'Returns analytics based on the type of device used by the viewers. Response values can include: `computer`, `phone`, `tablet`, `tv`, `console`, `wearable`, `unknown`.'
+            example:
+            - computer
+          operatingSystem:
+            type: array
+            items:
+              type: string
+            description: Returns analytics based on the operating system used by the viewers. Response values can include `windows`, `mac osx`, `android`, `ios`, `linux`.
+            example:
+            - windows
+          browser:
+            description: Returns analytics based on the browser used by the viewers. Response values can include `chrome`, `firefox`, `edge`, `opera`.
+            type: array
+            items:
+              type: string
+            example:
+            - firefox
+          tag:
+            type: string
+            description: Returns analytics for videos using this tag. This filter only accepts a single value and is case sensitive. Read more about tagging your videos [here](https://docs.api.video/vod/tags-metadata).
+            example: Cool videos
+          referrer:
+            type: array
+            items:
+              type: string
+              format: uri
+              maxLength: 2048
+            description: 'Filters data based on the URL where the view is originating from. This filter parameter accepts an empty string to filter view events where no referrer is available.
+
+
+              - The API filters for exact matches. Include the trailing `/` characters if needed.
+
+              - The URLs you add must be URL encoded.'
+            example:
+            - https%3A%2F%2Fmy-awesome-videos.com
+  schemas:
+    analytics-plays-400-error:
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+        detail:
+          description: A solution for the error.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+    too-many-requests:
+      title: TooManyRequests
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+    pagination-link:
+      title: PaginationLink
+      type: object
+      properties:
+        rel:
+          type: string
+        uri:
+          type: string
+          format: uri
+    analytics-metrics-over-time-response:
+      title: Analytics response for metrics over time
+      type: object
+      properties:
+        context:
+          type: object
+          properties:
+            metric:
+              description: Returns the metric and relevant parameters you selected.
+              type: string
+              enum:
+              - play
+              - play-rate
+              - start
+              - end
+              - impression
+              - ccv-average
+              - ccv-peak
+              - unique-ccv-average
+              - unique-ccv-peak
+              - view-3
+              - view-5
+              - view-10
+              - view-30
+              - unique-view
+              - unique-view-3
+              - unique-view-5
+              - unique-view-10
+              - unique-view-30
+              example: impression
+            interval:
+              description: Returns the interval you selected.
+              type: string
+              enum:
+              - minute
+              - hour
+              - day
+              example: day
+            timeframe:
+              description: Returns the starting and ending date-times of the period you want analytics for.
+              type: object
+              properties:
+                from:
+                  description: Returns the starting date-time of the period you want analytics for in ATOM date-time format.
+                  type: string
+                  format: date-time
+                  example: '2024-05-28T11:15:07+00:00'
+                to:
+                  description: Returns the starting date-time of the period you want analytics for in ATOM date-time format.
+                  type: string
+                  format: date-time
+                  example: '2024-05-29T11:15:07+00:00'
+        data:
+          description: Returns an array of metrics and the timestamps.
+          type: array
+          items:
+            type: object
+            properties:
+              emittedAt:
+                description: Returns the timestamp of the event that belongs to a specific metric in ATOM date-time format. For example, if you set `play` with an `hour` interval in your request, then `emittedAt` returns the hourly timestamps of every play event within the timeframe you defined.
+                type: string
+              metricValue:
+                description: Returns the data for a specific metric value.
+                type: number
+                format: float
+        pagination:
+          $ref: '#/components/schemas/pagination'
+      required:
+      - context
+      - data
+      - pagination
+    analytics-aggregated-metrics-response:
+      title: Analytics response for aggregated metrics
+      type: object
+      properties:
+        context:
+          type: object
+          properties:
+            metric:
+              description: Returns the metric and relevant parameters you selected.
+              type: string
+              enum:
+              - play
+              - start
+              - end
+              - impression
+              - impression-time
+              - watch-time
+              - ccv
+              - unique-ccv
+              - view-3
+              - view-5
+              - view-10
+              - view-30
+              - unique-view
+              - unique-view-3
+              - unique-view-5
+              - unique-view-10
+              - unique-view-30
+              example: impression
+            aggregation:
+              description: Returns the aggregation you selected.
+              type: string
+              enum:
+              - count
+              - rate
+              - total
+              - average
+              - sum
+              example: count
+            timeframe:
+              description: Returns the starting and ending date-times of the period you want analytics for.
+              type: object
+              properties:
+                from:
+                  description: Returns the starting date-time of the period you want analytics for in ATOM date-time format.
+                  type: string
+                  format: date-time
+                  example: '2024-05-28T11:15:07+00:00'
+                to:
+                  description: Returns the starting date-time of the period you want analytics for in ATOM date-time format.
+                  type: string
+                  format: date-time
+                  example: '2024-05-29T11:15:07+00:00'
+        data:
+          type: number
+          format: float
+          example: '356.2'
+      required:
+      - context
+      - data
+    unrecognized-request-url:
+      title: Unrecognized request URL
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+    pagination:
+      title: Pagination
+      required:
+      - links
+      type: object
+      properties:
+        itemsTotal:
+          type: integer
+          description: Total number of items that exist.
+          readOnly: true
+        pagesTotal:
+          type: integer
+          description: Number of items listed in the current page.
+          readOnly: true
+        pageSize:
+          type: integer
+          description: Maximum number of item per page.
+          readOnly: true
+        currentPage:
+          type: integer
+          description: The current page index.
+          readOnly: true
+        currentPageItems:
+          type: integer
+          description: The number of items on the current page.
+          readOnly: true
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/pagination-link'
+      example:
+        itemsTotal: 123
+        pagesTotal: 7
+        pageSize: 20
+        currentPage: 3
+        currentPageItems: 20
+        links:
+          first:
+            rel: first
+            uri: /videos/search?currentPage=1&pageSize=20
+          previous:
+            rel: previous
+            uri: /videos/search?currentPage=2&pageSize=20
+          next:
+            rel: next
+            uri: /videos/search?currentPage=4&pageSize=20
+          last:
+            rel: last
+            uri: /videos/search?currentPage=6&pageSize=20
+    analytics-metrics-breakdown-response:
+      title: Analytics response for metrics breakdown by dimension
+      type: object
+      properties:
+        context:
+          type: object
+          properties:
+            metric:
+              description: Returns the metric and relevant parameters you selected.
+              type: string
+              enum:
+              - play
+              - play-rate
+              - start
+              - end
+              - impression
+              - ccv-average
+              - ccv-peak
+              - unique-ccv-average
+              - unique-ccv-peak
+              - view-3
+              - view-5
+              - view-10
+              - view-30
+              - unique-view
+              - unique-view-3
+              - unique-view-5
+              - unique-view-10
+              - unique-view-30
+              example: impression
+            breakdown:
+              description: Returns the dimension you selected.
+              type: string
+              enum:
+              - media-id
+              - media-type
+              - continent
+              - country
+              - device-type
+              - operating-system
+              - browser
+              example: country
+            timeframe:
+              description: Returns the starting and ending date-times of the period you want analytics for.
+              type: object
+              properties:
+                from:
+                  description: Returns the starting date-time of the period you want analytics for in ATOM date-time format.
+                  type: string
+                  format: date-time
+                  example: '2024-05-28T11:15:07+00:00'
+                to:
+                  description: Returns the starting date-time of the period you want analytics for in ATOM date-time format.
+                  type: string
+                  format: date-time
+                  example: '2024-05-29T11:15:07+00:00'
+        data:
+          description: Returns an array of dimensions and their respective metrics.
+          type: array
+          items:
+            type: object
+            properties:
+              dimensionValue:
+                description: Returns a specific value for the dimension you selected, based on the data. For example if you select `continent` as a dimension, then `dimensionValue` returns values like `EU` or "AZ".
+                type: string
+              metricValue:
+                description: Returns the data for a specific dimension value.
+                type: number
+                format: float
+        pagination:
+          $ref: '#/components/schemas/pagination'
+      required:
+      - context
+      - data
+      - pagination
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    apiKey:
+      type: http
+      scheme: basic
+x-stoplight:
+  id: ybzk39fiws46g
+x-client-base-paths:
+  production: https://ws.api.video
+  sandbox: https://sandbox.api.video
+x-doctave:
+  explorer-enabled: true
+  proxy-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - curl
+  - go
+  - node
+  - php
+  - python

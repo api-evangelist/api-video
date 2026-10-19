@@ -96,6 +96,106 @@ apis:
     url: https://docs.api.video/reference
   - type: GettingStarted
     url: https://docs.api.video/get-started/start-building
+- aid: api-video:api-video-advanced-authentication-api
+  name: API.Video Advanced authentication API
+  description: >-
+    The Advanced authentication API from API.Video — 2 operation(s) for advanced authentication.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Advanced authentication
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-advanced-authentication-api-openapi.yml
+- aid: api-video:api-video-analytics-api
+  name: API.Video Analytics API
+  description: The Analytics API from API.Video — 3 operation(s) for analytics.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Analytics
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-analytics-api-openapi.yml
+- aid: api-video:api-video-captions-api
+  name: API.Video Captions API
+  description: The Captions API from API.Video — 2 operation(s) for captions.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Captions
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-captions-api-openapi.yml
+- aid: api-video:api-video-chapters-api
+  name: API.Video Chapters API
+  description: The Chapters API from API.Video — 2 operation(s) for chapters.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Chapters
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-chapters-api-openapi.yml
+- aid: api-video:api-video-live-streams-api
+  name: API.Video Live Streams API
+  description: The Live Streams API from API.Video — 4 operation(s) for live streams.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Live Streams
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-live-streams-api-openapi.yml
+- aid: api-video:api-video-player-themes-api
+  name: API.Video Player Themes API
+  description: The Player Themes API from API.Video — 3 operation(s) for player themes.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Player Themes
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-player-themes-api-openapi.yml
+- aid: api-video:api-video-summaries-api
+  name: API.Video Summaries API
+  description: The Summaries API from API.Video — 3 operation(s) for summaries.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Summaries
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-summaries-api-openapi.yml
+- aid: api-video:api-video-tags-api
+  name: API.Video Tags API
+  description: The Tags API from API.Video — 1 operation(s) for tags.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Tags
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-tags-api-openapi.yml
+- aid: api-video:api-video-upload-tokens-api
+  name: API.Video Upload Tokens API
+  description: The Upload Tokens API from API.Video — 2 operation(s) for upload tokens.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Upload Tokens
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-upload-tokens-api-openapi.yml
+- aid: api-video:api-video-watermarks-api
+  name: API.Video Watermarks API
+  description: The Watermarks API from API.Video — 2 operation(s) for watermarks.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Watermarks
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-watermarks-api-openapi.yml
+- aid: api-video:api-video-webhooks-api
+  name: API.Video Webhooks API
+  description: The Webhooks API from API.Video — 2 operation(s) for webhooks.
+  humanURL: https://docs.api.video/reference
+  tags:
+  - Webhooks
+  properties:
+  - type: OpenAPI
+    url: openapi/api-video-webhooks-api-openapi.yml
 common:
   - type: Plans
     url: plans/api-video-plans-pricing.yml

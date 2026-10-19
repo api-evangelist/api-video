@@ -1,0 +1,1122 @@
+openapi: 3.2.0
+info:
+  title: api.video Captions API
+  description: api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
+  version: '1'
+servers:
+- url: https://ws.api.video
+  description: Production server
+- url: https://sandbox.api.video
+  description: Test server `all videos are watermarked, and deleted after 24 hours.
+tags:
+- name: Captions
+paths:
+  /videos/{videoId}/captions/{language}:
+    get:
+      tags:
+      - Captions
+      summary: Retrieve a caption
+      description: Retrieve a caption for a video in a specific language.
+      x-client-description:
+        default: 'Retrieve a caption for a video in a specific language. If the language is available, the caption is returned. Otherwise, you will get a error indicating the caption was not found.
+
+          Tutorials that use the [captions endpoint](https://api.video/blog/endpoints/captions).'
+      operationId: GET_videos-videoId-captions-language
+      parameters:
+      - name: videoId
+        in: path
+        description: The unique identifier for the video you want captions for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: vi4k0jvEUuaTdRAEjQ4Prklg
+      - name: language
+        in: path
+        description: 'A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).
+
+
+          - This parameter **only accepts dashes for separators**, for example `fr-CA`. If you use a different separator in your request, the API returns an error.
+
+          - When the value in your request does not match any covered language, the API returns an error.
+
+          - You can find the list of supported tags [here](https://docs.api.video/vod/add-captions#supported-caption-language-tags).'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: en
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/caption'
+              examples:
+                response:
+                  value:
+                    uri: /videos/vi3N6cDinStg3oBbN79GklWS/captions/en
+                    src: https://cdn.api.video/vod/vi3N6cDinStg3oBbN79GklWS/captions/en.vtt
+                    srclang: en
+                    languageName: English
+                    default: false
+        '400':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                title: Bad request error
+                $ref: '#/components/schemas/bad-request'
+              examples:
+                Invalid language formatting:
+                  description: This error occurs when the language tag you provided contains characters other than letters and dashes.
+                  value:
+                    type: https://docs.api.video/reference/invalid-attribute
+                    title: An attribute is invalid.
+                    status: 400
+                    detail: The "language" attribute must contain only letters and dashes (for example "fr", "fr-BE").
+                    name: language
+                Invalid language:
+                  description: This error occurs when the language tag you provided does not match any supported language.
+                  value:
+                    type: https://docs.api.video/reference/invalid-attribute
+                    title: An attribute is invalid.
+                    status: 400
+                    detail: The "language" attribute is not valid.
+                    name: language
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/not-found'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: get
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/CaptionsApi.md#get\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    videoId := \"vi4k0jvEUuaTdRAEjQ4Prklg\" // string | The unique identifier for the video you want captions for.\n    language := \"en\" // string | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\n    \n    res, err := client.Captions.Get(videoId, language)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `Captions.Get``: %v\\\n\", err)\n    }\n    // response from `Get`: Caption\n    fmt.Fprintf(os.Stdout, \"Response from `Captions.Get`: %v\\\n\", res)\n}\n"
+        - language: node
+          code: '// First install the "@api.video/nodejs-client" npm package
+
+            // Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/CaptionsApi.md#get
+
+
+            const client = new ApiVideoClient({ apiKey: "YOUR_API_KEY" });
+
+
+            const videoId = ''vi4k0jvEUuaTdRAEjQ4Prklg''; // The unique identifier for the video you want captions for.
+
+            const language = ''en''; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).
+
+
+            const caption = await client.captions.get(videoId, language);
+
+            '
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/CaptionsApi.md#get\n\nimport apivideo\nfrom apivideo.api import captions_api\nfrom apivideo.model.not_found import NotFound\nfrom apivideo.model.caption import Caption\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = captions_api.CaptionsApi(api_client)\n    video_id = \"vi4k0jvEUuaTdRAEjQ4Prklg\" # str | The unique identifier for the video you want captions for.\n    language = \"en\" # str | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\n    # example passing only required values which don't have defaults set\n    try:\n        # Show a caption\n        api_response = api_instance.get(video_id, language)\n        pprint(api_response)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling CaptionsApi->get: %s\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/CaptionsApi.md#get\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.CaptionsApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    CaptionsApi apiInstance = client.captions();\n    \n    String videoId = \"vi4k0jvEUuaTdRAEjQ4Prklg\"; // The unique identifier for the video you want captions for.\n    String language = \"en\"; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\n    try {\n      Caption result = apiInstance.get(videoId, language);\n      System.out.println(result);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling CaptionsApi#get\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/CaptionsApi.md#get\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class getExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var videoId = vi4k0jvEUuaTdRAEjQ4Prklg;  // string | The unique identifier for the video you want captions for.\n            var language = en;  // string | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n            var apiCaptionsInstance = apiInstance.Captions();\n            try\n            {\n                // Show a caption\n                Caption result = apiCaptionsInstance.get(videoId, language);\n                Debug.WriteLine(result);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling CaptionsApi.get: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: '<?php
+
+            // First install the api client: "composer require api-video/php-api-client"
+
+            // Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/CaptionsApi.md#get
+
+
+            require __DIR__ . ''/vendor/autoload.php'';
+
+
+            $videoId = ''vi4k0jvEUuaTdRAEjQ4Prklg''; // The unique identifier for the video you want captions for.
+
+            $language = ''en''; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).
+
+
+            $client->captions()->get($videoId, $language); '
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/CaptionsAPI.md#get
+
+            '
+    post:
+      tags:
+      - Captions
+      summary: Upload a caption
+      description: Upload a VTT file to add captions to your video. More information can be found here
+      operationId: POST_videos-videoId-captions-language
+      parameters:
+      - name: videoId
+        in: path
+        description: The unique identifier for the video you want to add a caption to.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: vi4k0jvEUuaTdRAEjQ4Prklg
+      - name: language
+        in: path
+        description: 'A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).
+
+
+          - This parameter **only accepts dashes for separators**, for example `fr-CA`. If you use a different separator in your request, the API returns an error.
+
+          - When the value in your request does not match any covered language, the API returns an error.
+
+          - You can find the list of supported tags [here](https://docs.api.video/vod/add-captions#supported-caption-language-tags).'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: en
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/captions-upload-payload'
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/caption'
+              examples:
+                response:
+                  value:
+                    uri: /videos/vi3N6cDinStg3oBbN79GklWS/captions/en
+                    src: https://cdn.api.video/vod/vi3N6cDinStg3oBbN79GklWS/captions/en.vtt
+                    srclang: en
+                    languageName: English
+                    default: false
+        '400':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                title: Bad request error
+                $ref: '#/components/schemas/bad-request'
+              examples:
+                Invalid language formatting:
+                  description: This error occurs when the language tag you provided contains characters other than letters and dashes.
+                  value:
+                    type: https://docs.api.video/reference/invalid-attribute
+                    title: An attribute is invalid.
+                    status: 400
+                    detail: The "language" attribute must contain only letters and dashes (for example "fr", "fr-BE").
+                    name: language
+                Invalid language:
+                  description: This error occurs when the language tag you provided does not match any supported language.
+                  value:
+                    type: https://docs.api.video/reference/invalid-attribute
+                    title: An attribute is invalid.
+                    status: 400
+                    detail: The "language" attribute is not valid.
+                    name: language
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/not-found'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: upload
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/CaptionsApi.md#upload\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    videoId := \"vi4k0jvEUuaTdRAEjQ4Prklg\" // string | The unique identifier for the video you want to add a caption to.\n    language := \"en\" // string | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n    file := os.NewFile(1234, \"some_file\") // *os.File | The video text track (VTT) you want to upload.\n\n    \n    res, err := client.Captions.UploadFile(videoId, language, file)\n\n    // you can also use a Reader instead of a File:\n    // client.Captions.Upload(videoId, language, fileName, fileReader)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `Captions.Upload``: %v\\\n\", err)\n    }\n    // response from `Upload`: Caption\n    fmt.Fprintf(os.Stdout, \"Response from `Captions.Upload`: %v\\\n\", res)\n}\n"
+        - language: node
+          code: '// First install the "@api.video/nodejs-client" npm package
+
+            // Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/CaptionsApi.md#upload
+
+
+            const client = new ApiVideoClient({ apiKey: "YOUR_API_KEY" });
+
+
+            const videoId = ''vi4k0jvEUuaTdRAEjQ4Prklg''; // The unique identifier for the video you want to add a caption to.
+
+            const language = ''en''; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).
+
+            const file = ''./en.vtt''; // The video text track (VTT) you want to upload.
+
+
+            const caption = await client.captions.upload(videoId, language, file); '
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/CaptionsApi.md#upload\n\nimport apivideo\nfrom apivideo.api import captions_api\nfrom apivideo.model.bad_request import BadRequest\nfrom apivideo.model.not_found import NotFound\nfrom apivideo.model.caption import Caption\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = captions_api.CaptionsApi(api_client)\n    video_id = \"vi4k0jvEUuaTdRAEjQ4Prklg\" # str | The unique identifier for the video you want to add a caption to.\n    language = \"en\" # str | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n    file = open('/path/to/file', 'rb') # file_type | The video text track (VTT) you want to upload.\n\n    # example passing only required values which don't have defaults set\n    try:\n        # Upload a caption\n        api_response = api_instance.upload(video_id, language, file)\n        pprint(api_response)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling CaptionsApi->upload: %s\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/CaptionsApi.md#upload\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.CaptionsApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    CaptionsApi apiInstance = client.captions();\n    \n    String videoId = \"vi4k0jvEUuaTdRAEjQ4Prklg\"; // The unique identifier for the video you want captions for.\n    String language = \"en\"; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\n    try {\n      Caption result = apiInstance.get(videoId, language);\n      System.out.println(result);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling CaptionsApi#get\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/CaptionsApi.md#upload\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class uploadExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var videoId = vi4k0jvEUuaTdRAEjQ4Prklg;  // string | The unique identifier for the video you want to add a caption to.\n            var language = en;  // string | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n            var file = BINARY_DATA_HERE;  // System.IO.Stream | The video text track (VTT) you want to upload.\n            var apiCaptionsInstance = apiInstance.Captions();\n            try\n            {\n                // Upload a caption\n                Caption result = apiCaptionsInstance.upload(videoId, language, file);\n                Debug.WriteLine(result);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling CaptionsApi.upload: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: '<?php
+
+            // First install the api client: "composer require api-video/php-api-client"
+
+            // Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/CaptionsApi.md#upload
+
+
+            require __DIR__ . ''/vendor/autoload.php'';
+
+
+            $videoId = ''vi4k0jvEUuaTdRAEjQ4Prklg''; // The unique identifier for the video you want to add a caption to.
+
+            $language = ''en''; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).
+
+            $file = new SplFileObject(__DIR__ . ''/en.vtt''); // The video text track (VTT) you want to upload.
+
+
+            $caption = $client->captions()->upload($videoId, $language, $file); '
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/CaptionsAPI.md#upload
+
+            '
+    delete:
+      tags:
+      - Captions
+      summary: Delete a caption
+      description: Delete a caption in a specific language by by video id.
+      operationId: DELETE_videos-videoId-captions-language
+      parameters:
+      - name: videoId
+        in: path
+        description: The unique identifier for the video you want to delete a caption from.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: vi4k0jvEUuaTdRAEjQ4Prklgc
+      - name: language
+        in: path
+        description: 'A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).
+
+
+          - This parameter **only accepts dashes for separators**, for example `fr-CA`. If you use a different separator in your request, the API returns an error.
+
+          - When the value in your request does not match any covered language, the API returns an error.
+
+          - You can find the list of supported tags [here](https://docs.api.video/vod/add-captions#supported-caption-language-tags).'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: en
+      responses:
+        '204':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: No Content
+        '400':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                title: Bad request error
+                $ref: '#/components/schemas/bad-request'
+              examples:
+                Invalid language formatting:
+                  description: This error occurs when the language tag you provided contains characters other than letters and dashes.
+                  value:
+                    type: https://docs.api.video/reference/invalid-attribute
+                    title: An attribute is invalid.
+                    status: 400
+                    detail: The "language" attribute must contain only letters and dashes (for example "fr", "fr-BE").
+                    name: language
+                Invalid language:
+                  description: This error occurs when the language tag you provided does not match any supported language.
+                  value:
+                    type: https://docs.api.video/reference/invalid-attribute
+                    title: An attribute is invalid.
+                    status: 400
+                    detail: The "language" attribute is not valid.
+                    name: language
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/not-found'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: delete
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/CaptionsApi.md#delete\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    videoId := \"vi4k0jvEUuaTdRAEjQ4Prklgc\" // string | The unique identifier for the video you want to delete a caption from.\n    language := \"en\" // string | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\n    \n    err := client.Captions.Delete(videoId, language)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `Captions.Delete``: %v\\\n\", err)\n    }\n}\n"
+        - language: node
+          code: "// First install the \"@api.video/nodejs-client\" npm package\n// Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/CaptionsApi.md#delete\n\nconst client = new ApiVideoClient({ apiKey: \"YOUR_API_KEY\" });\n\nconst videoId = 'vi4k0jvEUuaTdRAEjQ4Prklgc'; // The unique identifier for the video you want to delete a caption from.\nconst language = 'en'; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\nawait client.captions.delete(videoId, language);\n "
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/CaptionsApi.md#delete\n\nimport apivideo\nfrom apivideo.api import captions_api\nfrom apivideo.model.not_found import NotFound\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = captions_api.CaptionsApi(api_client)\n    video_id = \"vi4k0jvEUuaTdRAEjQ4Prklgc\" # str | The unique identifier for the video you want to delete a caption from.\n    language = \"en\" # str | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\n    # example passing only required values which don't have defaults set\n    try:\n        # Delete a caption\n        api_instance.delete(video_id, language)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling CaptionsApi->delete: %s\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/CaptionsApi.md#delete\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.CaptionsApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    CaptionsApi apiInstance = client.captions();\n    \n    String videoId = \"vi4k0jvEUuaTdRAEjQ4Prklgc\"; // The unique identifier for the video you want to delete a caption from.\n    String language = \"en\"; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\n    try {\n      apiInstance.delete(videoId, language);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling CaptionsApi#delete\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/CaptionsApi.md#delete\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class deleteExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var videoId = vi4k0jvEUuaTdRAEjQ4Prklgc;  // string | The unique identifier for the video you want to delete a caption from.\n            var language = en;  // string | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n            var apiCaptionsInstance = apiInstance.Captions();\n            try\n            {\n                // Delete a caption\n                apiCaptionsInstance.delete(videoId, language);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling CaptionsApi.delete: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: '<?php
+
+            // First install the api client: "composer require api-video/php-api-client"
+
+            // Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/CaptionsApi.md#delete
+
+
+            require __DIR__ . ''/vendor/autoload.php'';
+
+
+            $videoId = ''vi4k0jvEUuaTdRAEjQ4Prklgc''; // The unique identifier for the video you want to delete a caption from.
+
+            $language = ''en''; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).
+
+
+            $client->captions()->delete($videoId, $language); '
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/CaptionsAPI.md#delete
+
+            '
+    patch:
+      tags:
+      - Captions
+      summary: Update a caption
+      description: Update caption settings.
+      x-client-description:
+        default: 'To have the captions on automatically, use this method to set default: true.'
+      operationId: PATCH_videos-videoId-captions-language
+      parameters:
+      - name: videoId
+        in: path
+        description: The unique identifier for the video you want to have automatic captions for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: vi4k0jvEUuaTdRAEjQ4Prklg
+      - name: language
+        in: path
+        description: 'A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).
+
+
+          - This parameter **only accepts dashes for separators**, for example `fr-CA`. If you use a different separator in your request, the API returns an error.
+
+          - When the value in your request does not match any covered language, the API returns an error.
+
+          - You can find the list of supported tags [here](https://docs.api.video/vod/add-captions#supported-caption-language-tags).'
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: en
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/captions-update-payload'
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/caption'
+              examples:
+                response:
+                  value:
+                    uri: /videos/vi3N6cDinStg3oBbN79GklWS/captions/en
+                    src: https://cdn.api.video/vod/vi3N6cDinStg3oBbN79GklWS/captions/en.vtt
+                    srclang: en
+                    languageName: English
+                    default: true
+        '400':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Bad request error
+          content:
+            application/json:
+              schema:
+                title: Bad request error
+                $ref: '#/components/schemas/bad-request'
+              examples:
+                Invalid language formatting:
+                  description: This error occurs when the language tag you provided contains characters other than letters and dashes.
+                  value:
+                    type: https://docs.api.video/reference/invalid-attribute
+                    title: An attribute is invalid.
+                    status: 400
+                    detail: The "language" attribute must contain only letters and dashes (for example "fr", "fr-BE").
+                    name: language
+                Invalid language:
+                  description: This error occurs when the language tag you provided does not match any supported language.
+                  value:
+                    type: https://docs.api.video/reference/invalid-attribute
+                    title: An attribute is invalid.
+                    status: 400
+                    detail: The "language" attribute is not valid.
+                    name: language
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/not-found'
+              examples:
+                response:
+                  value:
+                    type: Lorem sit culpa non
+                    title: sunt do fugiat tempor
+                    name: irure mollit aute
+                    status: 85925135
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: update
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/CaptionsApi.md#update\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    videoId := \"vi4k0jvEUuaTdRAEjQ4Prklg\" // string | The unique identifier for the video you want to have automatic captions for.\n    language := \"en\" // string | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n    captionsUpdatePayload := *apivideosdk.NewCaptionsUpdatePayload() // CaptionsUpdatePayload | \n\n    \n    res, err := client.Captions.Update(videoId, language, captionsUpdatePayload)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `Captions.Update``: %v\\\n\", err)\n    }\n    // response from `Update`: Caption\n    fmt.Fprintf(os.Stdout, \"Response from `Captions.Update`: %v\\\n\", res)\n}\n"
+        - language: node
+          code: "// First install the \"@api.video/nodejs-client\" npm package\n// Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/CaptionsApi.md#update\n\nconst client = new ApiVideoClient({ apiKey: \"YOUR_API_KEY\" });\n\nconst videoId = 'vi4k0jvEUuaTdRAEjQ4Prklg'; // The unique identifier for the video you want to have automatic captions for.\nconst language = 'en'; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\nconst captionsUpdatePayload = {\n  _default: true,\n}; \n \nconst caption = await client.captions.update(videoId, language, captionsUpdatePayload);\n        \n"
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/CaptionsApi.md#update\n\nimport apivideo\nfrom apivideo.api import captions_api\nfrom apivideo.model.bad_request import BadRequest\nfrom apivideo.model.captions_update_payload import CaptionsUpdatePayload\nfrom apivideo.model.not_found import NotFound\nfrom apivideo.model.caption import Caption\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = captions_api.CaptionsApi(api_client)\n    video_id = \"vi4k0jvEUuaTdRAEjQ4Prklg\" # str | The unique identifier for the video you want to have automatic captions for.\n    language = \"en\" # str | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n    captions_update_payload = CaptionsUpdatePayload(\n        default=True,\n    ) # CaptionsUpdatePayload | \n\n    # example passing only required values which don't have defaults set\n    try:\n        # Update caption\n        api_response = api_instance.update(video_id, language, captions_update_payload)\n        pprint(api_response)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling CaptionsApi->update: %s\\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/CaptionsApi.md#update\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.CaptionsApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    CaptionsApi apiInstance = client.captions();\n    \n    String videoId = \"vi4k0jvEUuaTdRAEjQ4Prklg\"; // The unique identifier for the video you want to have automatic captions for.\n    String language = \"en\"; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n    CaptionsUpdatePayload captionsUpdatePayload = new CaptionsUpdatePayload(); // \n    captionsUpdatePayload.setDefault(); // \n\n\n    try {\n      Caption result = apiInstance.update(videoId, language, captionsUpdatePayload);\n      System.out.println(result);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling CaptionsApi#update\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/CaptionsApi.md#update\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class updateExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var videoId = vi4k0jvEUuaTdRAEjQ4Prklg;  // string | The unique identifier for the video you want to have automatic captions for.\n            var language = en;  // string | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n            var captionsUpdatePayload = new CaptionsUpdatePayload(); // CaptionsUpdatePayload | \n            var apiCaptionsInstance = apiInstance.Captions();\n            try\n            {\n                // Update caption\n                Caption result = apiCaptionsInstance.update(videoId, language, captionsUpdatePayload);\n                Debug.WriteLine(result);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling CaptionsApi.update: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: "<?php\n// First install the api client: \"composer require api-video/php-api-client\"\n// Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/CaptionsApi.md#update\n\nrequire __DIR__ . '/vendor/autoload.php';\n\n$videoId = 'vi4k0jvEUuaTdRAEjQ4Prklg'; // The unique identifier for the video you want to have automatic captions for.\n$language = 'en'; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\n$captionsUpdatePayload = (new \\ApiVideo\\Client\\Model\\CaptionsUpdatePayload())\n    ->setDefault(true);\n \n$caption = $client->captions()->update($videoId, $language, $captionsUpdatePayload); "
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/CaptionsAPI.md#update
+
+            '
+  /videos/{videoId}/captions:
+    get:
+      tags:
+      - Captions
+      summary: List video captions
+      description: Retrieve a list of available captions by video id.
+      operationId: GET_videos-videoId-captions
+      parameters:
+      - name: videoId
+        in: path
+        description: The unique identifier for the video you want to retrieve a list of captions for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: vi4k0jvEUuaTdRAEjQ4Prklg
+      - $ref: '#/components/parameters/current-page'
+      - $ref: '#/components/parameters/page-size'
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/captions-list-response'
+              examples:
+                response:
+                  value:
+                    data:
+                    - uri: /videos/vi3N6cDinStg3oBbN79GklWS/captions/en
+                      src: https://cdn.api.video/vod/vi3N6cDinStg3oBbN79GklWS/captions/en.vtt
+                      srclang: en
+                      languageName: English
+                      default: false
+                    - uri: /videos/vi3N6cDinStg3oBbN79GklWS/captions/fr
+                      src: https://cdn.api.video/vod/vi3N6cDinStg3oBbN79GklWS/captions/fr.vtt
+                      srclang: fr
+                      languageName: Française
+                      default: false
+                    pagination:
+                      currentPage: 1
+                      currentPageItems: 2
+                      pageSize: 25
+                      pagesTotal: 1
+                      itemsTotal: 2
+                      links:
+                      - rel: self
+                        uri: /videos/vi3N6cDinStg3oBbN79GklWS/captions?currentPage=1&pageSize=25
+                      - rel: first
+                        uri: /videos/vi3N6cDinStg3oBbN79GklWS/captions?currentPage=1&pageSize=25
+                      - rel: last
+                        uri: /videos/vi3N6cDinStg3oBbN79GklWS/captions?currentPage=1&pageSize=25
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/not-found'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: list
+      x-group-parameters: true
+      x-client-paginated: true
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/CaptionsApi.md#list\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    videoId := \"vi4k0jvEUuaTdRAEjQ4Prklg\" // string | The unique identifier for the video you want captions for.\n    language := \"en\" // string | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\n    \n    res, err := client.Captions.Get(videoId, language)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `Captions.Get``: %v\\\n\", err)\n    }\n    // response from `Get`: Caption\n    fmt.Fprintf(os.Stdout, \"Response from `Captions.Get`: %v\\\n\", res)\n}\n"
+        - language: node
+          code: "// First install the \"@api.video/nodejs-client\" npm package\n// Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/CaptionsApi.md#list\n\nconst client = new ApiVideoClient({ apiKey: \"YOUR_API_KEY\" });\n\nconst captions = await client.captions.list({\n  videoId 'vi4k0jvEUuaTdRAEjQ4Prklg', // The unique identifier for the video you want to retrieve a list of captions for.\n  currentPage: 2, // Choose the number of search results to return per page. Minimum value: 1\n  pageSize: 30, // Results per page. Allowed values 1-100, default is 25.\n); "
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/CaptionsApi.md#list\n\nimport apivideo\nfrom apivideo.api import captions_api\nfrom apivideo.model.not_found import NotFound\nfrom apivideo.model.caption import Caption\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = captions_api.CaptionsApi(api_client)\n    video_id = \"vi4k0jvEUuaTdRAEjQ4Prklg\" # str | The unique identifier for the video you want captions for.\n    language = \"en\" # str | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\n    # example passing only required values which don't have defaults set\n    try:\n        # Show a caption\n        api_response = api_instance.get(video_id, language)\n        pprint(api_response)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling CaptionsApi->get: %s\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/CaptionsApi.md#list\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.CaptionsApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    CaptionsApi apiInstance = client.captions();\n    \n    String videoId = \"vi4k0jvEUuaTdRAEjQ4Prklg\"; // The unique identifier for the video you want captions for.\n    String language = \"en\"; // A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n\n    try {\n      Caption result = apiInstance.get(videoId, language);\n      System.out.println(result);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling CaptionsApi#get\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/CaptionsApi.md#list\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class getExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var videoId = vi4k0jvEUuaTdRAEjQ4Prklg;  // string | The unique identifier for the video you want captions for.\n            var language = en;  // string | A valid language identifier using IETF language tags. You can use primary subtags like `en` (English), extended subtags like `fr-CA` (French, Canada), or region subtags like `zh-Hans-CN` (Simplified Chinese used in the PRC).\n            var apiCaptionsInstance = apiInstance.Captions();\n            try\n            {\n                // Show a caption\n                Caption result = apiCaptionsInstance.get(videoId, language);\n                Debug.WriteLine(result);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling CaptionsApi.get: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: "<?php\n// First install the api client: \"composer require api-video/php-api-client\"\n// Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/CaptionsApi.md#list\n\nrequire __DIR__ . '/vendor/autoload.php';\n\n$videoId = 'vi4k0jvEUuaTdRAEjQ4Prklg'; // The unique identifier for the video you want to retrieve a list of captions for.\n\n$captions = $client->captions()->list($videoId, array(\n    'currentPage' => 2, // Choose the number of search results to return per page. Minimum value: 1)\n    'pageSize' => 30 // Results per page. Allowed values 1-100, default is 25.)\n)); "
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/CaptionsAPI.md#list
+
+            '
+components:
+  parameters:
+    current-page:
+      name: currentPage
+      in: query
+      description: 'Choose the number of search results to return per page. Minimum value: 1'
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        default: 1
+      example: 2
+    page-size:
+      name: pageSize
+      in: query
+      description: Results per page. Allowed values 1-100, default is 25.
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        default: 25
+      example: 30
+  schemas:
+    bad-request:
+      title: BadRequest
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+        problems:
+          description: Returns any additional problems in the request in an array of objects.
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/additional-bad-request-errors'
+    captions-list-response:
+      title: VideoCaptions
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/caption'
+        pagination:
+          $ref: '#/components/schemas/pagination'
+      required:
+      - data
+      - pagination
+    too-many-requests:
+      title: TooManyRequests
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+    pagination-link:
+      title: PaginationLink
+      type: object
+      properties:
+        rel:
+          type: string
+        uri:
+          type: string
+          format: uri
+    caption:
+      title: Caption
+      type: object
+      properties:
+        uri:
+          type: string
+          description: The unique resource identifier of the uploaded caption.
+          example: /videos/vi1111DinStg3oBbN79GklWS/captions/sr-Cyrl
+        src:
+          type: string
+          description: A direct URL to the uploaded caption file.
+          example: https://cdn.api.video/vod/vi1111DinStg3oBbN79GklWS/captions/sr-Cyrl.vtt
+        srclang:
+          type: string
+          description: Indicates the language of the uploaded caption file using IETF language tags.
+          example: sr-Cyrl
+        languageName:
+          type: string
+          description: Returns the native name of the caption language in UTF-8 encoding.
+          example: српски (ћирилица)
+        default:
+          type: boolean
+          description: Whether you will have subtitles or not. True for yes you will have subtitles, false for no you will not have subtitles.
+          example: false
+          default: false
+    additional-bad-request-errors:
+      title: BadRequest
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+    captions-update-payload:
+      title: CaptionsUpdatePayload
+      type: object
+      properties:
+        default:
+          description: Set this parameter to `true` to define a caption as the default for a video.
+          type: boolean
+    pagination:
+      title: Pagination
+      required:
+      - links
+      type: object
+      properties:
+        itemsTotal:
+          type: integer
+          description: Total number of items that exist.
+          readOnly: true
+        pagesTotal:
+          type: integer
+          description: Number of items listed in the current page.
+          readOnly: true
+        pageSize:
+          type: integer
+          description: Maximum number of item per page.
+          readOnly: true
+        currentPage:
+          type: integer
+          description: The current page index.
+          readOnly: true
+        currentPageItems:
+          type: integer
+          description: The number of items on the current page.
+          readOnly: true
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/pagination-link'
+      example:
+        itemsTotal: 123
+        pagesTotal: 7
+        pageSize: 20
+        currentPage: 3
+        currentPageItems: 20
+        links:
+          first:
+            rel: first
+            uri: /videos/search?currentPage=1&pageSize=20
+          previous:
+            rel: previous
+            uri: /videos/search?currentPage=2&pageSize=20
+          next:
+            rel: next
+            uri: /videos/search?currentPage=4&pageSize=20
+          last:
+            rel: last
+            uri: /videos/search?currentPage=6&pageSize=20
+    not-found:
+      title: NotFound
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+    captions-upload-payload:
+      title: CaptionsUploadPayload
+      required:
+      - file
+      type: object
+      properties:
+        file:
+          type: string
+          description: The video text track (VTT) you want to upload.
+          format: binary
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    apiKey:
+      type: http
+      scheme: basic
+x-stoplight:
+  id: ybzk39fiws46g
+x-client-base-paths:
+  production: https://ws.api.video
+  sandbox: https://sandbox.api.video
+x-doctave:
+  explorer-enabled: true
+  proxy-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - curl
+  - go
+  - node
+  - php
+  - python

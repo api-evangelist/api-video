@@ -1,0 +1,796 @@
+openapi: 3.2.0
+info:
+  title: api.video Chapters API
+  description: api.video is an API that encodes on the go to facilitate immediate playback, enhancing viewer streaming experiences across multiple devices and platforms. You can stream live or on-demand online videos within minutes.
+  version: '1'
+servers:
+- url: https://ws.api.video
+  description: Production server
+- url: https://sandbox.api.video
+  description: Test server `all videos are watermarked, and deleted after 24 hours.
+tags:
+- name: Chapters
+paths:
+  /videos/{videoId}/chapters/{language}:
+    get:
+      tags:
+      - Chapters
+      summary: Retrieve a chapter
+      description: Retrieve a chapter for by video id in a specific language.
+      operationId: GET_videos-videoId-chapters-language
+      parameters:
+      - name: videoId
+        in: path
+        description: The unique identifier for the video you want to show a chapter for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: vi4k0jvEUuaTdRAEjQ4Jfrgz
+      - name: language
+        in: path
+        description: A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: en
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/chapter'
+              examples:
+                response:
+                  value:
+                    uri: /videos/vi3N6cDinStg3oBbN79GklWS/chapters/fr
+                    src: https://cdn.api.video/vod/vi3N6cDinStg3oBbN79GklWS/chapters/fr.vtt
+                    language: fr
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/not-found'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: get
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/ChaptersApi.md#get\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    videoId := \"vi4k0jvEUuaTdRAEjQ4Jfrgz\" // string | The unique identifier for the video you want to show a chapter for.\n    language := \"en\" // string | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n\n    \n    res, err := client.Chapters.Get(videoId, language)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `Chapters.Get``: %v\\\n\", err)\n    }\n    // response from `Get`: Chapter\n    fmt.Fprintf(os.Stdout, \"Response from `Chapters.Get`: %v\\\n\", res)\n}\n"
+        - language: node
+          code: '// First install the "@api.video/nodejs-client" npm package
+
+            // Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/ChaptersApi.md#get
+
+
+            const client = new ApiVideoClient({ apiKey: "YOUR_API_KEY" });
+
+
+            const videoId = ''vi4k0jvEUuaTdRAEjQ4Jfrgz''; // The unique identifier for the video you want to show a chapter for.
+
+            const language = ''en''; // A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.
+
+
+            const chapter = await client.chapters.get(videoId, language); '
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/ChaptersApi.md#get\n\nimport apivideo\nfrom apivideo.api import chapters_api\nfrom apivideo.model.not_found import NotFound\nfrom apivideo.model.chapter import Chapter\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = chapters_api.ChaptersApi(api_client)\n    video_id = \"vi4k0jvEUuaTdRAEjQ4Jfrgz\" # str | The unique identifier for the video you want to show a chapter for.\n    language = \"en\" # str | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n\n    # example passing only required values which don't have defaults set\n    try:\n        # Show a chapter\n        api_response = api_instance.get(video_id, language)\n        pprint(api_response)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling ChaptersApi->get: %s\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/ChaptersApi.md#get\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.ChaptersApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    ChaptersApi apiInstance = client.chapters();\n    \n    String videoId = \"vi4k0jvEUuaTdRAEjQ4Jfrgz\"; // The unique identifier for the video you want to show a chapter for.\n    String language = \"en\"; // A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n\n    try {\n      Chapter result = apiInstance.get(videoId, language);\n      System.out.println(result);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling ChaptersApi#get\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/ChaptersApi.md#get\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class getExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var videoId = vi4k0jvEUuaTdRAEjQ4Jfrgz;  // string | The unique identifier for the video you want to show a chapter for.\n            var language = en;  // string | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n            var apiChaptersInstance = apiInstance.Chapters();\n            try\n            {\n                // Show a chapter\n                Chapter result = apiChaptersInstance.get(videoId, language);\n                Debug.WriteLine(result);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling ChaptersApi.get: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: '<?php
+
+            // First install the api client: "composer require api-video/php-api-client"
+
+            // Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/ChaptersApi.md#delete
+
+
+            require __DIR__ . ''/vendor/autoload.php'';
+
+
+            $videoId = ''vi4k0jvEUuaTdRAEjQ4Jfrgz''; // The unique identifier for the video you want to delete a chapter from.
+
+            $language = ''en''; // A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.
+
+
+            $client->chapters()->delete($videoId, $language); '
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/ChaptersAPI.md#get
+
+            '
+    post:
+      tags:
+      - Chapters
+      summary: Upload a chapter
+      description: 'Upload a VTT file to add chapters to your video.
+
+        Chapters help break the video into sections. Read our tutorial for more details.'
+      operationId: POST_videos-videoId-chapters-language
+      parameters:
+      - name: videoId
+        in: path
+        description: The unique identifier for the video you want to upload a chapter for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: vi4k0jvEUuaTdRAEjQ4Jfrgz
+      - name: language
+        in: path
+        description: A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: en
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/chapters-update-payload'
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/chapter'
+              examples:
+                response:
+                  value:
+                    uri: /videos/vi3N6cDinStg3oBbN79GklWS/chapters/fr
+                    src: https://cdn.api.video/vod/vi3N6cDinStg3oBbN79GklWS/chapters/fr.vtt
+                    language: fr
+        '400':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bad-request'
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/not-found'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: upload
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/ChaptersApi.md#upload\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    videoId := \"vi4k0jvEUuaTdRAEjQ4Jfrgz\" // string | The unique identifier for the video you want to upload a chapter for.\n    language := \"en\" // string | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n    file := os.NewFile(1234, \"some_file\") // *os.File | The VTT file describing the chapters you want to upload.\n\n    \n    res, err := client.Chapters.UploadFile(videoId, language, file)\n\n    // you can also use a Reader instead of a File:\n    // client.Chapters.Upload(videoId, language, fileName, fileReader)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `Chapters.Upload``: %v\\\n\", err)\n    }\n    // response from `Upload`: Chapter\n    fmt.Fprintf(os.Stdout, \"Response from `Chapters.Upload`: %v\\\n\", res)\n}\n"
+        - language: node
+          code: "// First install the \"@api.video/nodejs-client\" npm package\n// Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/ChaptersApi.md#upload\n\nconst client = new ApiVideoClient({ apiKey: \"YOUR_API_KEY\" });\n\nconst videoId = 'vi4k0jvEUuaTdRAEjQ4Jfrgz'; // The unique identifier for the video you want to upload a chapter for.\nconst language = 'en'; // A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\nconst file = './en.vtt'; // The VTT file describing the chapters you want to upload.\n\nconst chapter = await client.chapters.upload(videoId, language, file); \n"
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/ChaptersApi.md#upload\n\nimport apivideo\nfrom apivideo.api import chapters_api\nfrom apivideo.model.bad_request import BadRequest\nfrom apivideo.model.not_found import NotFound\nfrom apivideo.model.chapter import Chapter\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = chapters_api.ChaptersApi(api_client)\n    video_id = \"vi4k0jvEUuaTdRAEjQ4Jfrgz\" # str | The unique identifier for the video you want to upload a chapter for.\n    language = \"en\" # str | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n    file = open('/path/to/file', 'rb') # file_type | The VTT file describing the chapters you want to upload.\n\n    # example passing only required values which don't have defaults set\n    try:\n        # Upload a chapter\n        api_response = api_instance.upload(video_id, language, file)\n        pprint(api_response)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling ChaptersApi->upload: %s\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/ChaptersApi.md#upload\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.ChaptersApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    ChaptersApi apiInstance = client.chapters();\n    \n    String videoId = \"vi4k0jvEUuaTdRAEjQ4Jfrgz\"; // The unique identifier for the video you want to upload a chapter for.\n    String language = \"en\"; // A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n    File file = new File(\"/path/to/file\"); // The VTT file describing the chapters you want to upload.\n\n    try {\n      Chapter result = apiInstance.upload(videoId, language, file);\n      System.out.println(result);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling ChaptersApi#upload\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/ChaptersApi.md#upload\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class uploadExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var videoId = vi4k0jvEUuaTdRAEjQ4Jfrgz;  // string | The unique identifier for the video you want to upload a chapter for.\n            var language = en;  // string | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n            var file = BINARY_DATA_HERE;  // System.IO.Stream | The VTT file describing the chapters you want to upload.\n            var apiChaptersInstance = apiInstance.Chapters();\n            try\n            {\n                // Upload a chapter\n                Chapter result = apiChaptersInstance.upload(videoId, language, file);\n                Debug.WriteLine(result);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling ChaptersApi.upload: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: '<?php
+
+            // First install the api client: "composer require api-video/php-api-client"
+
+            // Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/ChaptersApi.md#upload
+
+
+            require __DIR__ . ''/vendor/autoload.php'';
+
+
+            $videoId = ''vi4k0jvEUuaTdRAEjQ4Jfrgz''; // The unique identifier for the video you want to upload a chapter for.
+
+            $language = ''en''; // A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.
+
+            $file = new SplFileObject(__DIR__ . ''/en.vtt''); // The VTT file describing the chapters you want to upload.
+
+
+            $chapter = $client->chapters()->upload($videoId, $language, $file); '
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/ChaptersAPI.md#upload
+
+            '
+    delete:
+      tags:
+      - Chapters
+      summary: Delete a chapter
+      description: Delete a chapter in a specific language by providing the video ID for the video you want to delete the chapter from and the language the chapter is in.
+      operationId: DELETE_videos-videoId-chapters-language
+      parameters:
+      - name: videoId
+        in: path
+        description: The unique identifier for the video you want to delete a chapter from.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: vi4k0jvEUuaTdRAEjQ4Jfrgz
+      - name: language
+        in: path
+        description: A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: en
+      responses:
+        '204':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: No Content
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/not-found'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: delete
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/ChaptersApi.md#delete\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    videoId := \"vi4k0jvEUuaTdRAEjQ4Jfrgz\" // string | The unique identifier for the video you want to delete a chapter from.\n    language := \"en\" // string | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n\n    \n    err := client.Chapters.Delete(videoId, language)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `Chapters.Delete``: %v\\\n\", err)\n    }\n}\n"
+        - language: node
+          code: '// First install the "@api.video/nodejs-client" npm package
+
+            // Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/ChaptersApi.md#delete
+
+
+            const client = new ApiVideoClient({ apiKey: "YOUR_API_KEY" });
+
+
+            const videoId = ''vi4k0jvEUuaTdRAEjQ4Jfrgz''; // The unique identifier for the video you want to delete a chapter from.
+
+            const language = ''en''; // A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.
+
+
+            await client.chapters.delete(videoId, language); '
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/ChaptersApi.md#delete\n\nimport apivideo\nfrom apivideo.api import chapters_api\nfrom apivideo.model.not_found import NotFound\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = chapters_api.ChaptersApi(api_client)\n    video_id = \"vi4k0jvEUuaTdRAEjQ4Jfrgz\" # str | The unique identifier for the video you want to delete a chapter from.\n    language = \"en\" # str | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n\n    # example passing only required values which don't have defaults set\n    try:\n        # Delete a chapter\n        api_instance.delete(video_id, language)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling ChaptersApi->delete: %s\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/ChaptersApi.md#delete\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.ChaptersApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    ChaptersApi apiInstance = client.chapters();\n    \n    String videoId = \"vi4k0jvEUuaTdRAEjQ4Jfrgz\"; // The unique identifier for the video you want to delete a chapter from.\n    String language = \"en\"; // A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n\n    try {\n      apiInstance.delete(videoId, language);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling ChaptersApi#delete\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/ChaptersApi.md#delete\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class deleteExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var videoId = vi4k0jvEUuaTdRAEjQ4Jfrgz;  // string | The unique identifier for the video you want to delete a chapter from.\n            var language = en;  // string | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n            var apiChaptersInstance = apiInstance.Chapters();\n            try\n            {\n                // Delete a chapter\n                apiChaptersInstance.delete(videoId, language);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling ChaptersApi.delete: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: '<?php
+
+            // First install the api client: "composer require api-video/php-api-client"
+
+            // Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/ChaptersApi.md#delete
+
+
+            require __DIR__ . ''/vendor/autoload.php'';
+
+
+            $videoId = ''vi4k0jvEUuaTdRAEjQ4Jfrgz''; // The unique identifier for the video you want to delete a chapter from.
+
+            $language = ''en''; // A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.
+
+
+            $client->chapters()->delete($videoId, $language); '
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/ChaptersAPI.md#delete
+
+            '
+  /videos/{videoId}/chapters:
+    get:
+      tags:
+      - Chapters
+      summary: List video chapters
+      description: Retrieve a list of all chapters for by video id.
+      operationId: GET_videos-videoId-chapters
+      parameters:
+      - name: videoId
+        in: path
+        description: The unique identifier for the video you want to retrieve a list of chapters for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: vi4k0jvEUuaTdRAEjQ4Jfrgz
+      - $ref: '#/components/parameters/current-page'
+      - $ref: '#/components/parameters/page-size'
+      responses:
+        '200':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/chapters-list-response'
+              examples:
+                response:
+                  value:
+                    data:
+                    - uri: /videos/vi3N6cDinStg3oBbN79GklWS/chapters/fr
+                      src: https://cdn.api.video/vod/vi3N6cDinStg3oBbN79GklWS/chapters/fr.vtt
+                      language: fr
+                    - uri: /videos/vi3N6cDinStg3oBbN79GklWS/chapters/en
+                      src: https://cdn.api.video/vod/vi3N6cDinStg3oBbN79GklWS/chapters/en.vtt
+                      language: en
+                    pagination:
+                      currentPage: 1
+                      currentPageItems: 2
+                      pageSize: 25
+                      pagesTotal: 1
+                      itemsTotal: 2
+                      links:
+                      - rel: self
+                        uri: /videos/vi3N6cDinStg3oBbN79GklWS/chapters?currentPage=1&pageSize=25
+                      - rel: first
+                        uri: /videos/vi3N6cDinStg3oBbN79GklWS/chapters?currentPage=1&pageSize=25
+                      - rel: last
+                        uri: /videos/vi3N6cDinStg3oBbN79GklWS/chapters?currentPage=1&pageSize=25
+        '404':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/not-found'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: The request limit per minute.
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: The number of available requests left for the current time window.
+            X-RateLimit-Retry-After:
+              schema:
+                type: integer
+              description: The number of seconds left until the current rate limit window resets.
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/too-many-requests'
+              examples:
+                Too many requests:
+                  value:
+                    type: https://docs.api.video/reference/too-many-requests
+                    title: Too many requests.
+                    status: 429
+      security:
+      - apiKey: []
+      x-client-action: list
+      x-group-parameters: true
+      x-client-paginated: true
+      x-doctave:
+        code-samples:
+        - language: go
+          code: "// First install the go client with \"go get github.com/apivideo/api.video-go-client\"\n// Documentation: https://github.com/apivideo/api.video-go-client/blob/main/docs/ChaptersApi.md#list\n\npackage main\n\nimport (\n    \"context\"\n    \"fmt\"\n    \"os\"\n    apivideosdk \"github.com/apivideo/api.video-go-client\"\n)\n\nfunc main() {\n    client := apivideosdk.ClientBuilder(\"YOUR_API_KEY\").Build()\n    // if you rather like to use the sandbox environment:\n    // client := apivideosdk.SandboxClientBuilder(\"YOUR_SANDBOX_API_KEY\").Build()\n        \n    videoId := \"vi4k0jvEUuaTdRAEjQ4Jfrgz\" // string | The unique identifier for the video you want to show a chapter for.\n    language := \"en\" // string | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n\n    \n    res, err := client.Chapters.Get(videoId, language)\n\n    if err != nil {\n        fmt.Fprintf(os.Stderr, \"Error when calling `Chapters.Get``: %v\\\n\", err)\n    }\n    // response from `Get`: Chapter\n    fmt.Fprintf(os.Stdout, \"Response from `Chapters.Get`: %v\\\n\", res)\n}\n"
+        - language: node
+          code: "// First install the \"@api.video/nodejs-client\" npm package\n// Documentation: https://github.com/apivideo/api.video-nodejs-client/blob/main/doc/api/ChaptersApi.md#list\n\nconst client = new ApiVideoClient({ apiKey: \"YOUR_API_KEY\" });\n\nconst captions = await client.chapters.list({\n  videoId 'vi4k0jvEUuaTdRAEjQ4Prklg', // The unique identifier for the video you want to retrieve a list of chapters for.\n  currentPage: 2, // Choose the number of search results to return per page. Minimum value: 1\n  pageSize: 30, // Results per page. Allowed values 1-100, default is 25.\n);  "
+        - language: python
+          code: "# First install the api client with \"pip install api.video\"\n# Documentation: https://github.com/apivideo/api.video-python-client/blob/main/docs/ChaptersApi.md#list\n\nimport apivideo\nfrom apivideo.api import chapters_api\nfrom apivideo.model.not_found import NotFound\nfrom apivideo.model.chapter import Chapter\nfrom pprint import pprint\n\n# Enter a context with an instance of the API client\nwith apivideo.AuthenticatedApiClient(__API_KEY__) as api_client:\n    # Create an instance of the API class\n    api_instance = chapters_api.ChaptersApi(api_client)\n    video_id = \"vi4k0jvEUuaTdRAEjQ4Jfrgz\" # str | The unique identifier for the video you want to show a chapter for.\n    language = \"en\" # str | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n\n    # example passing only required values which don't have defaults set\n    try:\n        # Show a chapter\n        api_response = api_instance.get(video_id, language)\n        pprint(api_response)\n    except apivideo.ApiException as e:\n        print(\"Exception when calling ChaptersApi->get: %s\\n\" % e)\n"
+        - language: java
+          code: "// First add the \"video.api:java-api-client\" maven dependency to your project\n// Documentation: https://github.com/apivideo/api.video-java-client/blob/main/docs/ChaptersApi.md#list\n\nimport video.api.client.ApiVideoClient;\nimport video.api.client.api.ApiException;\nimport video.api.client.api.models.*;\nimport video.api.client.api.clients.ChaptersApi;\nimport java.util.*;\n\npublic class Example {\n  public static void main(String[] args) {\n    ApiVideoClient client = new ApiVideoClient(\"YOUR_API_KEY\");\n    // if you rather like to use the sandbox environment:\n    // ApiVideoClient client = new ApiVideoClient(\"YOUR_SANDBOX_API_KEY\", ApiVideoClient.Environment.SANDBOX);\n\n    ChaptersApi apiInstance = client.chapters();\n    \n    String videoId = \"vi4k0jvEUuaTdRAEjQ4Jfrgz\"; // The unique identifier for the video you want to show a chapter for.\n    String language = \"en\"; // A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n\n    try {\n      Chapter result = apiInstance.get(videoId, language);\n      System.out.println(result);\n    } catch (ApiException e) {\n      System.err.println(\"Exception when calling ChaptersApi#get\");\n      System.err.println(\"Status code: \" + e.getCode());\n      System.err.println(\"Reason: \" + e.getMessage());\n      System.err.println(\"Response headers: \" + e.getResponseHeaders());\n      e.printStackTrace();\n    }\n  }\n}\n"
+        - language: csharp
+          code: "// First add the \"ApiVideo\" NuGet package to your project\n// Documentation: https://github.com/apivideo/api.video-csharp-client/blob/main/docs/ChaptersApi.md#list\n\nusing System.Diagnostics;\nusing ApiVideo.Client;\n\nnamespace Example\n{\n    public class getExample\n    {\n        public static void Main()\n        {\n            var basePath = ApiVideoClient.Client.Environment.SANDBOX;\n            var apiKey = \"YOUR_API_KEY\";\n\n            var apiInstance = new ApiVideoClient(apiKey,basePath);\n\n            var videoId = vi4k0jvEUuaTdRAEjQ4Jfrgz;  // string | The unique identifier for the video you want to show a chapter for.\n            var language = en;  // string | A valid [BCP 47](https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers) language representation.\n            var apiChaptersInstance = apiInstance.Chapters();\n            try\n            {\n                // Show a chapter\n                Chapter result = apiChaptersInstance.get(videoId, language);\n                Debug.WriteLine(result);\n            }\n            catch (ApiException  e)\n            {\n                Debug.Print(\"Exception when calling ChaptersApi.get: \" + e.Message );\n                Debug.Print(\"Status Code: \"+ e.ErrorCode);\n                Debug.Print(e.StackTrace);\n            }\n        }\n    }\n}\n"
+        - language: php
+          code: "<?php\n// First install the api client: \"composer require api-video/php-api-client\"\n// Documentation: https://github.com/apivideo/api.video-php-client/blob/main/docs/Api/ChaptersApi.md#list\n\nrequire __DIR__ . '/vendor/autoload.php';\n\n$videoId = 'vi4k0jvEUuaTdRAEjQ4Prklg'; // The unique identifier for the video you want to retrieve a list of chapters for.\n\n$captions = $client->chapters()->list($videoId, array(\n    'currentPage' => 2, // Choose the number of search results to return per page. Minimum value: 1)\n    'pageSize' => 30 // Results per page. Allowed values 1-100, default is 25.)\n)); "
+        - language: swift
+          code: '// First install the api client: https://github.com/apivideo/api.video-swift-client#getting-started
+
+            // Documentation: https://github.com/apivideo/api.video-swift-client/blob/main/docs/ChaptersAPI.md#list
+
+            '
+components:
+  parameters:
+    current-page:
+      name: currentPage
+      in: query
+      description: 'Choose the number of search results to return per page. Minimum value: 1'
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        default: 1
+      example: 2
+    page-size:
+      name: pageSize
+      in: query
+      description: Results per page. Allowed values 1-100, default is 25.
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: integer
+        default: 25
+      example: 30
+  schemas:
+    chapter:
+      title: Chapter
+      type: object
+      properties:
+        uri:
+          type: string
+        src:
+          type: string
+          description: The link to your VTT file, which contains your chapters information for the video.
+          example: https://cdn.api.video/vod/vi3N6cDinStg3oBbN79GklWS/chapters/fr.vtt
+        language:
+          type: string
+    bad-request:
+      title: BadRequest
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+        problems:
+          description: Returns any additional problems in the request in an array of objects.
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/additional-bad-request-errors'
+    chapters-list-response:
+      title: VideoChapters
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/chapter'
+        pagination:
+          $ref: '#/components/schemas/pagination'
+      required:
+      - data
+      - pagination
+    too-many-requests:
+      title: TooManyRequests
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+    pagination-link:
+      title: PaginationLink
+      type: object
+      properties:
+        rel:
+          type: string
+        uri:
+          type: string
+          format: uri
+    additional-bad-request-errors:
+      title: BadRequest
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+    pagination:
+      title: Pagination
+      required:
+      - links
+      type: object
+      properties:
+        itemsTotal:
+          type: integer
+          description: Total number of items that exist.
+          readOnly: true
+        pagesTotal:
+          type: integer
+          description: Number of items listed in the current page.
+          readOnly: true
+        pageSize:
+          type: integer
+          description: Maximum number of item per page.
+          readOnly: true
+        currentPage:
+          type: integer
+          description: The current page index.
+          readOnly: true
+        currentPageItems:
+          type: integer
+          description: The number of items on the current page.
+          readOnly: true
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/pagination-link'
+      example:
+        itemsTotal: 123
+        pagesTotal: 7
+        pageSize: 20
+        currentPage: 3
+        currentPageItems: 20
+        links:
+          first:
+            rel: first
+            uri: /videos/search?currentPage=1&pageSize=20
+          previous:
+            rel: previous
+            uri: /videos/search?currentPage=2&pageSize=20
+          next:
+            rel: next
+            uri: /videos/search?currentPage=4&pageSize=20
+          last:
+            rel: last
+            uri: /videos/search?currentPage=6&pageSize=20
+    not-found:
+      title: NotFound
+      type: object
+      properties:
+        type:
+          description: A link to the error documentation.
+          type: string
+        title:
+          description: A description of the error that occurred.
+          type: string
+        name:
+          description: The name of the parameter that caused the error.
+          type: string
+        status:
+          description: The HTTP status code.
+          type: integer
+    chapters-update-payload:
+      title: ChaptersUpdatePayload
+      required:
+      - file
+      type: object
+      properties:
+        file:
+          type: string
+          description: The VTT file describing the chapters you want to upload.
+          format: binary
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    apiKey:
+      type: http
+      scheme: basic
+x-stoplight:
+  id: ybzk39fiws46g
+x-client-base-paths:
+  production: https://ws.api.video
+  sandbox: https://sandbox.api.video
+x-doctave:
+  explorer-enabled: true
+  proxy-enabled: true
+  samples-enabled: true
+  samples-languages:
+  - curl
+  - go
+  - node
+  - php
+  - python
