@@ -1422,3 +1422,9 @@ x-doctave:
   - node
   - php
   - python
+x-provenance:
+  method: harvested
+  publisher: API.Video
+  source: https://docs.api.video/openapi.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
