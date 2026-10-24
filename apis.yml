@@ -156,6 +156,8 @@ apis:
   description: The Summaries API from API.Video — 3 operation(s) for summaries.
   humanURL: https://docs.api.video/reference
   tags:
+  - Summary
+  tags_raw:
   - Summaries
   properties:
   - type: OpenAPI
@@ -192,6 +194,8 @@ apis:
   description: The Webhooks API from API.Video — 2 operation(s) for webhooks.
   humanURL: https://docs.api.video/reference
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
