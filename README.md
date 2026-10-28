@@ -1,4 +1,4 @@
-# API.Video (api-video)
+# API.Video
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,103 +66,120 @@
 
 api.video is a video infrastructure platform offering APIs for video on demand, live streaming, analytics, and AI-powered features including transcription and summarization. It provides lightning-fast encoding, 99.999% uptime, 140+ global points of presence, and SDKs in 20+ languages for integrating video into websites, apps, and software.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/api-video/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/api-video/refs/heads/main/apis.yml)
+**Areas:** Artificial Intelligence · Analytics · CDN · Encoding · Live Streaming · Transcription · Video · Video-on-Demand
 
-## Scope
+## API.Video on APIs.io
 
-- **Type:** Index
+Everything profiled for API.Video is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/api-video/](https://apis.io/providers/api-video/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (3)
 
-- AI
-- Analytics
-- CDN
-- Encoding
-- Live Streaming
-- Transcription
-- Video
-- Video on Demand
+- [api.video Live Streaming API](https://apis.io/apis/api-video/live-streaming/) — The api.video Live Streaming API enables low-latency live video broadcasts with RTMP ingest, automatic recording, and global CDN delivery for audiences…
+- [api.video Analytics API](https://apis.io/apis/api-video/analytics/) — The api.video Analytics API provides viewer engagement metrics, playback statistics, and performance data for both video on demand and live streaming content.
+- [API.Video Videos API](https://apis.io/apis/api-video/api-video-videos-api/) — The Videos API from API.Video — 8 operation(s) for videos.
 
-## Timestamps
+### Published properties
 
-- **Created:** 2025-03-01
-- **Modified:** 2026-05-19
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### Agentic access (1)
 
-### api.video Video On Demand API
+Which operations an agent can call, which act, and which need a human in the loop.
 
-The api.video Video On Demand API enables uploading, encoding, and streaming videos with automatic format conversion, thumbnail generation, and global CDN delivery. Supports resumable uploads and programmatic video management.
+- [Api Video Agentic Access](https://apis.io/agentic-access/api-video/api-video-agentic-access/)
 
-- **Human URL:** [https://docs.api.video/reference](https://docs.api.video/reference)
+#### Collections (2)
 
-#### Tags
+Postman and Open Collection request collections.
 
-- Encoding
-- On Demand
-- Streaming
-- Video
+- [api.video API](https://apis.io/collections/api-video/open-api-video/)
+- [api.video Videos API](https://apis.io/collections/api-video/open-api-video-videos-api/)
 
-#### Properties
+#### Security (1)
 
-- [Documentation](https://docs.api.video/reference)
-- [Getting Started](https://docs.api.video/get-started/start-building)
-- [OpenAPI](openapi/api-video-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/api-video.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/api-video.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Authentication, trust centre, and vulnerability disclosure.
 
-### api.video Live Streaming API
+- [Api Video Domain Security](https://apis.io/security/api-video/api-video-domain-security/)
 
-The api.video Live Streaming API enables low-latency live video broadcasts with RTMP ingest, automatic recording, and global CDN delivery for audiences worldwide.
+#### Plans and pricing (1)
 
-- **Human URL:** [https://docs.api.video/reference](https://docs.api.video/reference)
+Published plans, tiers and prices.
 
-#### Tags
+- [Api Video Plans Pricing](https://apis.io/plans/api-video/api-video-plans-pricing/)
 
-- Broadcasting
-- Live Streaming
-- RTMP
-- Video
+#### Rate limits (1)
 
-#### Properties
+Published request limits.
 
-- [Documentation](https://docs.api.video/reference)
-- [Postman Collection](collections/api-video.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/api-video.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Api Video Rate Limits](https://apis.io/rate-limits/api-video/api-video-rate-limits/)
 
-### api.video Analytics API
+#### FinOps (1)
 
-The api.video Analytics API provides viewer engagement metrics, playback statistics, and performance data for both video on demand and live streaming content.
+What the API costs to run, by operation.
 
-- **Human URL:** [https://docs.api.video/reference](https://docs.api.video/reference)
+- [Api Video Finops](https://apis.io/finops/api-video/api-video-finops/)
 
-#### Tags
+## Where to find this API
 
-- Analytics
-- Engagement
-- Metrics
-- Video
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-#### Properties
-
-- [Documentation](https://docs.api.video/reference)
-- [Postman Collection](collections/api-video.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/api-video.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-## Common Properties
-
-- [LinkedIn](https://www.linkedin.com/company/api-video)
 - [Website](https://api.video/)
 - [Documentation](https://docs.api.video/)
-- [Getting Started](https://docs.api.video/get-started/start-building)
-- [Status Page](https://status.api.video)
-- [GitHub Organization](https://github.com/ApiVideo)
+- [Getting started](https://docs.api.video/get-started/start-building)
 - [Pricing](https://api.video/pricing)
-- [Features](undefined)
-- [Use Cases](undefined)
-- [Integrations](undefined)
+- [Blog](https://api.video/blog/)
+- [GitHub](https://github.com/ApiVideo)
+- [Status](https://status.api.video)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** info@apievangelist.com
+**Kin Score 26.2** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 62.5 |
+| Contract quality | 41.1 |
+| Contract governance | 0.0 |
+| Operational transparency | 26.3 |
+| Developer ergonomics | 23.8 |
+| Access clarity | 18.4 |
+
+**Agent readiness 15.4** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | — |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | — |
+| Rate Limit Signal | derived (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 5.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/api-video/](https://apis.io/providers/api-video/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for API.Video: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/api-video/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
