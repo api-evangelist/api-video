@@ -5,9 +5,18 @@ artifacts:
   agentic-access/api-video-agentic-access.yml:
     method: generated
     evidence: declared in the artifact
+  asyncapi/api-video-webhooks.yml:
+    method: searched
+    evidence: declared in the artifact
+  authentication/api-video-authentication.yml:
+    method: searched
+    evidence: declared in the artifact
   capabilities/api-video-capability-edges.yml:
     method: unknown
     evidence: no authorship recorded
+  changelog/api-video-changelog.yml:
+    method: searched
+    evidence: declared in the artifact
   collections/api-video-videos-api.opencollection.json:
     method: derived
     evidence: openapi/api-video-videos-api
@@ -20,6 +29,21 @@ artifacts:
   collections/api-video.postman_collection.json:
     method: derived
     evidence: openapi/api-video
+  components/api-video-components.yml:
+    method: searched
+    evidence: declared in the artifact
+  conformance/api-video-conformance.yml:
+    method: derived
+    evidence: declared in the artifact
+  conventions/api-video-conventions.yml:
+    method: searched
+    evidence: declared in the artifact
+  data-model/api-video-data-model.yml:
+    method: derived
+    evidence: declared in the artifact
+  errors/api-video-problem-types.yml:
+    method: searched
+    evidence: declared in the artifact
   finops/api-video-finops.yml:
     method: generated
     evidence: declared in the artifact
@@ -29,12 +53,150 @@ artifacts:
   heartbeat/2026-11-02.yml:
     method: unknown
     evidence: no authorship recorded
+  hosts/api-video-hosts.yml:
+    method: derived
+    evidence: declared in the artifact
   integrations/_index.yml:
     method: generated
     evidence: carries an API Evangelist house phrase
   integrations/api-video-integration-edges.yml:
     method: searched
     evidence: declared in the artifact
+  json-ld/api-video-context.jsonld:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-access-token-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-analytics-aggregated-metrics-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-analytics-metrics-breakdown-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-analytics-metrics-over-time-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-authenticate-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-caption-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-captions-list-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-captions-update-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-captions-upload-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-chapter-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-chapters-list-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-chapters-update-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-list-tags-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-live-stream-creation-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-live-stream-list-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-live-stream-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-live-stream-thumbnail-upload-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-live-stream-update-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-player-theme-creation-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-player-theme-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-player-theme-update-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-player-theme-upload-logo-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-player-themes-list-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-refresh-token-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-summaries-list-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-summary-creation-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-summary-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-summary-source-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-summary-update-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-token-creation-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-token-list-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-token-upload-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-upload-token-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-video-creation-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-video-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-video-status-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-video-thumbnail-pick-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-video-update-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-watermark-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-watermark-upload-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-watermarks-list-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-webhook-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-webhooks-creation-payload-schema.json:
+    method: unknown
+    evidence: no authorship recorded
+  json-schema/api-video-webhooks-list-response-schema.json:
+    method: unknown
+    evidence: no authorship recorded
   kin/checks-2026-10-23T222754.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
@@ -107,6 +269,12 @@ artifacts:
   kin/score-2026-11-02T082323.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
+  lifecycle/api-video-lifecycle.yml:
+    method: searched
+    evidence: declared in the artifact
+  mcp/api-video-mcp.yml:
+    method: derived
+    evidence: declared in the artifact
   openapi/_original/api-video-openapi.yml:
     method: harvested
     evidence: byte-identical to https://docs.api.video/openapi.yaml (sha256 5f3de7eed3d5, fetched 2026-10-19)
@@ -146,21 +314,57 @@ artifacts:
   openapi/api-video-webhooks-api-openapi.yml:
     method: derived
     evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  packages/api-video-packages.yml:
+    method: searched
+    evidence: declared in the artifact
   patterns/api-video-patterns.yml:
     method: derived
     evidence: declared in the artifact
   plans/api-video-plans-pricing.yml:
-    method: generated
+    method: searched
     evidence: declared in the artifact
   rate-limits/api-video-rate-limits.yml:
-    method: generated
+    method: searched
     evidence: declared in the artifact
+  regulatory/api-video-regulatory-posture.yml:
+    method: unknown
+    evidence: no authorship recorded
   rules/api-video-rules.yml:
     method: generated
+    evidence: declared in the artifact
+  sandbox/api-video-sandbox.yml:
+    method: searched
     evidence: declared in the artifact
   security/api-video-domain-security.yml:
     method: unknown
     evidence: no authorship recorded
+  skills/_index.yml:
+    method: generated
+    evidence: declared in the artifact
+  skills/api-video-delegated-upload-token.md:
+    method: generated
+    evidence: declared in the artifact
+  skills/api-video-run-a-live-stream.md:
+    method: generated
+    evidence: declared in the artifact
+  skills/api-video-subscribe-and-verify-webhooks.md:
+    method: generated
+    evidence: declared in the artifact
+  skills/api-video-upload-and-publish-video.md:
+    method: generated
+    evidence: declared in the artifact
   sla/api-video-sla.yml:
     method: generated
     evidence: declared in the artifact
+  vendors/api-video-vendors.yml:
+    method: unknown
+    evidence: no authorship recorded
+  vocabulary/api-video-vocabulary.yml:
+    method: derived
+    evidence: declared in the artifact
+  well-known/api-video-status-security.txt:
+    method: unknown
+    evidence: no authorship recorded
+  well-known/api-video-well-known.yml:
+    method: unknown
+    evidence: no authorship recorded
