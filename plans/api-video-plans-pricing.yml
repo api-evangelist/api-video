@@ -87,7 +87,7 @@ add_ons:
     price_text: "1-1,000 plays: $36 /month | 1,001-10,000 plays: $149 /month | 10,000+ plays: $299 /month"
 note: The pricing page also states "No commitments or credit card required" for getting started and offers a calculator comparing against AWS, GCP and Oracle; volume discounts are referenced but not priced on the page. The enterprise page (https://api.video/enterprise/) quotes a 99.999% SLA where the pricing page quotes 99.9%.
 x-canonical:
-  generated: '2026-11-06'
+  generated: '2026-11-13'
   vocabulary: engine/economics/plans-canonical.yml
   models:
   - metered

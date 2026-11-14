@@ -5,6 +5,9 @@ artifacts:
   agentic-access/api-video-agentic-access.yml:
     method: generated
     evidence: declared in the artifact
+  ai-preferences/api-video-ai-preferences.yml:
+    method: harvested
+    evidence: declared in the artifact
   asyncapi/api-video-webhooks.yml:
     method: searched
     evidence: declared in the artifact
@@ -12,6 +15,12 @@ artifacts:
     method: searched
     evidence: declared in the artifact
   capabilities/api-video-capability-edges.yml:
+    method: unknown
+    evidence: no authorship recorded
+  certification/observations-2026-11-11.jsonl:
+    method: unknown
+    evidence: no authorship recorded
+  certification/status.yml:
     method: unknown
     evidence: no authorship recorded
   changelog/api-video-changelog.yml:
@@ -41,6 +50,9 @@ artifacts:
   data-model/api-video-data-model.yml:
     method: derived
     evidence: declared in the artifact
+  eligibility/api-video-eligibility.yml:
+    method: harvested
+    evidence: declared in the artifact
   errors/api-video-problem-types.yml:
     method: searched
     evidence: declared in the artifact
@@ -51,6 +63,12 @@ artifacts:
     method: unknown
     evidence: no authorship recorded
   heartbeat/2026-11-02.yml:
+    method: unknown
+    evidence: no authorship recorded
+  heartbeat/2026-11-06.yml:
+    method: unknown
+    evidence: no authorship recorded
+  heartbeat/2026-11-13.yml:
     method: unknown
     evidence: no authorship recorded
   hosts/api-video-hosts.yml:
@@ -200,7 +218,7 @@ artifacts:
   kin/checks-2026-10-23T222754.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
-  kin/checks-2026-11-02T082323.yml:
+  kin/checks-2026-11-06T143934.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-09-23T000603.yml:
@@ -269,6 +287,9 @@ artifacts:
   kin/score-2026-11-02T082323.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-11-06T143934.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
   lifecycle/api-video-lifecycle.yml:
     method: searched
     evidence: declared in the artifact
@@ -314,6 +335,18 @@ artifacts:
   openapi/api-video-webhooks-api-openapi.yml:
     method: derived
     evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  overlays/api-video-certification-overlay.yaml:
+    method: derived
+    evidence: declared in the artifact
+  overlays/api-video-summaries-api-certification-overlay.yaml:
+    method: derived
+    evidence: declared in the artifact
+  overlays/api-video-tags-api-certification-overlay.yaml:
+    method: derived
+    evidence: declared in the artifact
+  overlays/api-video-videos-api-certification-overlay.yaml:
+    method: derived
+    evidence: declared in the artifact
   packages/api-video-packages.yml:
     method: searched
     evidence: declared in the artifact
@@ -322,6 +355,9 @@ artifacts:
     evidence: declared in the artifact
   plans/api-video-plans-pricing.yml:
     method: searched
+    evidence: declared in the artifact
+  privacy/api-video-privacy-policy.yml:
+    method: harvested
     evidence: declared in the artifact
   rate-limits/api-video-rate-limits.yml:
     method: searched
@@ -355,6 +391,9 @@ artifacts:
     evidence: declared in the artifact
   sla/api-video-sla.yml:
     method: generated
+    evidence: declared in the artifact
+  terms/api-video-terms-of-service.yml:
+    method: harvested
     evidence: declared in the artifact
   vendors/api-video-vendors.yml:
     method: unknown
